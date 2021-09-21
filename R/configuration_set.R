@@ -115,10 +115,7 @@ is.configuration_set = function(x) {
 
 #' @export
 print.configuration_set = function(x, ...) {
-  attrs = names(attributes(x))
-  attrs = attrs[!(attrs %in% c("dim","dimnames"))]
-  for (i in seq_along(attrs))
-    attr(x, attrs[i]) = NULL
+  x = strip_attr(x)
   print.default(x, ...)
 }
 

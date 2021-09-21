@@ -40,17 +40,17 @@ test_that("fit_group_network", {
   expect_equal(y[[1]]$potential, 8.6)
   
   set.seed(10001)
-  w = round(matrix(rnorm(36, -.5), 6, 6), 1)
+  w = round(matrix(rnorm(64, -.5), 8, 8), 1)
   diag(w) = 0
   f = set_configuration_ids(list(
-    star(3:6),
-    subgroup_all(2:6),
+    star(3:8),
+    subgroup_all(2:5),
     subgroup_all(2:6, relation = "between")
   ))
-  y = fit_group_network(w, f)
+  y = fit_group_network(w, f, solver = "gurobi")
   attr(y$G1, "duration")
   y = lapply(f, fit_group_network, x = w, solver = "gurobi")
-  rowSums(sapply(y, function(a) attr(a$G1, "duration")))
+  rowSums(lapply(y, function(a) attr(a$G1, "duration")))
   
   
 })

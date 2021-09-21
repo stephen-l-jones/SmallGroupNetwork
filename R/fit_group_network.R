@@ -11,11 +11,6 @@
 #' @param configuration_set
 #' A \code{configuration_set} object, which is a list of configurations 
 #' (see \code{\link{configuration_set}}).
-#' @param all_best
-#' If \code{all_best = TRUE}, returns all best-fitting configurations that fit a group 
-#' network equally well (if more than one do). If \code{all_best = FALSE}, returns one best-fitting
-#' configuration among those that fit a network equally well. When \code{all_best = TRUE}, 
-#' performance will be slower.
 #' @param parallel
 #' Use parallel processing. Parallel processing can only be used when multiple group networks are 
 #' being fit.
@@ -93,8 +88,7 @@
 #' 
 #' @seealso \code{\link{configuration}}, \code{\link{configuration_set}}
 #' @export
-fit_group_network = function(x, configuration_set, all_best = FALSE,
-                             parallel = FALSE, cores = NULL, ...) {
+fit_group_network = function(x, configuration_set, ...) {
   if (is.list(x)) {
     obj = x[[1]]
   } else {
@@ -133,8 +127,10 @@ fit_group_network = function(x, configuration_set, all_best = FALSE,
 #' @export
 fit_group_network.default = function(x, configuration_set, group_index, weights, group_sizes,
                                      type = c("unspecified","edgelist","adjacency"),
-                                     all_best = FALSE, parallel = FALSE, cores = NULL, ...) {
+                                     ties.method = c("all","first","last","random"),
+                                     parallel = FALSE, cores = NULL, ...) {
   type = match.arg(type)
+  ties.method = match.arg(ties.method)
   if (is.array(x) && length(dim(x)) == 3) {
     x = asplit(x, 3)
   }
@@ -195,7 +191,7 @@ fit_group_network.default = function(x, configuration_set, group_index, weights,
   })
   names(w_list) = names(x)
   
-  fit_list(w_list, configuration_set, all_best, parallel, cores, ...)
+  fit_list(w_list, configuration_set, ties.method, parallel, cores, ...)
 }
 
 #' @describeIn fit_group_network Group networks from \code{igraph} objects
@@ -203,7 +199,9 @@ fit_group_network.default = function(x, configuration_set, group_index, weights,
 #' Attribute name that holds the edge weights (usually \code{"weight"}).
 #' @export
 fit_group_network.igraph = function(x, configuration_set, attrname, 
-                                    all_best = FALSE, parallel = FALSE, cores = NULL, ...) {
+                                    ties.method = c("all","first","last","random"),
+                                    parallel = FALSE, cores = NULL, ...) {
+  ties.method = match.arg(ties.method)
   if (!is.list()) {
     x = list(x)
   }
@@ -214,7 +212,7 @@ fit_group_network.igraph = function(x, configuration_set, attrname,
     return(igraph::as_adjacency_matrix(gr, sparse = FALSE))
   })
 
-  fit_list(w_list, configuration_set, all_best, parallel, cores, ...)
+  fit_list(w_list, configuration_set, ties.method, parallel, cores, ...)
 }
 
 #' @describeIn fit_group_network Group networks from \code{network} objects 
@@ -222,7 +220,9 @@ fit_group_network.igraph = function(x, configuration_set, attrname,
 #' Attribute name that holds the edge weights (usually \code{"weight"}).
 #' @export
 fit_group_network.network = function(x, configuration_set, attrname, 
-                                     all_best = FALSE, parallel = FALSE, cores = NULL, ...) {
+                                     ties.method = c("all","first","last","random"),
+                                     parallel = FALSE, cores = NULL, ...) {
+  ties.method = match.arg(ties.method)
   if (!is.list()) {
     x = list(x)
   }
@@ -233,25 +233,18 @@ fit_group_network.network = function(x, configuration_set, attrname,
     return(network::as.sociomatrix(gr))
   })
   
-  fit_list(w_list, configuration_set, all_best, parallel, cores, ...)
+  fit_list(w_list, configuration_set, ties.method, parallel, cores, ...)
 }
 
+fit_list = function(w_list, f_list, ties.method, parallel, cores, ...) {
 
-fit_list = function(w_list, f_list, all_best, parallel, cores, ...) {
-
-  f_list = as.configuration_set(f_list)
-
-  if (is.null(names(w_list))) {
-    digits = floor(log10(seq_along(w_list))) + 1
-    names(w_list) = paste0(
-      "G",
-      sapply(digits, function(d, md) paste(rep(0, md - d), collapse = ""), md = max(digits)),
-      seq_along(w_list)
-    )
-  }
-  for (i in seq_along(w_list)) {
-    attr(w_list[[i]], "group_name") = names(w_list)[i]
-  }
+  f_list   = as.configuration_set(f_list)
+  w_list   = set_group_attributes(w_list)
+  match_wf = match_index(w_list, f_list)
+  iter_wf  = split(cbind(
+    w_list[match_wf[, "w"]], 
+    f_list[match_wf[, "f"]]
+  ), seq_len(nrow(match_wf)))
 
   if (parallel && length(w_list) > 1 && (is.null(cores) || cores > 1)) {
     cores = min(cores, parallel::detectCores(), length(w_list))
@@ -263,12 +256,10 @@ fit_list = function(w_list, f_list, all_best, parallel, cores, ...) {
     tryCatch(
       {
         solution = pbLapply(
-          x         = w_list,
+          x         = iter_wf,
           fun       = solve_fit,
           cl        = cl,
           packages  = c("ROI","ROI.plugin.glpk","Rglpk","slam","SmallGroupNetwork"),
-          f_list    = f_list,
-          all_best  = all_best,
           ...
         )
       },
@@ -280,19 +271,68 @@ fit_list = function(w_list, f_list, all_best, parallel, cores, ...) {
     )
   } else{
     solution = pbLapply(
-      x         = w_list,
+      x         = iter_wf,
       fun       = solve_fit,
-      f_list    = f_list,
-      all_best  = all_best,
       ...
     )
   }
-  return(solution)
+  choose_optimal(w_list, f_list, match_wf, solution, ties.method)
 }
 
+set_group_attributes = function(x) {
+  if (is.null(names(x))) {
+    digits = floor(log10(seq_along(x))) + 1
+    group_ids = paste0(
+      "G",
+      sapply(digits, function(d, md) paste(rep(0, md - d), collapse = ""), md = max(digits)),
+      seq_along(x)
+    )
+  } else {
+    group_ids = names(x)
+  }
+  x = lapply(seq_along(x), function(i) {
+    attr(x[[i]], "class")    = c("group_network","matrix")
+    attr(x[[i]], "group_id") = group_ids[i]
+    return(x[[i]])
+  })
+  names(x) = group_ids
+  return(x)
+}
 
+match_index = function(w_list, f_list) {
+  w_size = sapply(w_list, nrow)
+  f_size = get_attribute(f_list, "group_size")
+  
+  ndx = which(matrix(
+    data     = kronecker(w_size, f_size, FUN = "-") == 0, 
+    nrow     = length(f_size)
+  ), arr.ind = TRUE)[, 2:1]
+  colnames(ndx) = c("w","f")
+  return(ndx)
+}
 
-
-
-
+choose_optimal = function(w_list, f_list, match_wf, solution, ties.method) {
+  f_type  = get_attribute(f_list, "type")[match_wf[, 2]]
+  optimal = lapply(seq_along(w_list), function(i) {
+    match_ndx = which(match_wf[, 1] == i)
+    if (length(match_ndx) == 0) {
+      set = list(make_configuration_fit(w_list[[i]], NULL, NULL, NULL, NULL, NULL, NULL, NA, NA))
+    } else {
+      f_type = get_attribute(solution[match_ndx], "type")
+      set = as.configuration_fit_set(tapply(solution[match_ndx], f_type, function(x) {
+        s = sapply(x, "[[", "score")
+        x[s == max(s)]
+      }, simplify = FALSE))
+    }
+    switch(
+      ties.method,
+      all    = set,
+      first  = set[[1]],
+      last   = set[[length(set)]],
+      random = set[[sample.int(length(set), 1)]]
+    )
+  })
+  names(optimal) = names(w_list)
+  return(optimal)
+}
 

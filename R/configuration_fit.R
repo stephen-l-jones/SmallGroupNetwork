@@ -1,4 +1,4 @@
-make_configuration_fit = function(x, fit, configuration_id,  score, potential, lp_structure,
+make_configuration_fit = function(x, fit, configuration_id, score, potential, lp_structure,
                                   ROI_obj, duration, solver) {
   configuration_fit = list(
     x                = x,
@@ -29,16 +29,15 @@ is.configuration_fit = function(x) {
 
 #' @export
 print.configuration_fit = function(x, ...) {
-  attrs = names(attributes(x))
-  attrs = attrs[!(attrs %in% c("names"))]
-  for (i in seq_along(attrs))
-    attr(x, attrs[i]) = NULL
+  fit_name = attr(x$fit, "description")
+  group_id = attr(x$x, "group_id")
   
-  cat("Group: ", attr(x$x, "group_name"), "\n", sep = "")
-  attr(x$x, "group_name") = NULL
-  print(x$x, ...)
-  cat("\n")
-  print(x$fit, ...)
+  x     = strip_attr(x)
+  x$fit = strip_attr(x$fit)
+  
+  cat("Group: ", group_id, "\n", sep = "")
+  cat("Fit: ", fit_name, "\n", sep = "")
+  print.default(x$fit, na.print = "-", ...)
   cat("Score: ", format(x$score, digits = 5), "\n", sep = "")
 }
 
@@ -71,4 +70,16 @@ print.configuration_fit_summary = function(x, ...) {
   cat("Score        : ", x$score, "\n", sep = "")
   cat("Potential    : ", x$potential, "\n", sep = "")
   cat("Solver       : ", x$solver, "\n", sep = "")
+}
+
+#' @export
+print.group_network = function(x, ...) {
+  group_id = attr(x, "group_id")
+  attrs = names(attributes(x))
+  attrs = attrs[!(attrs %in% c("dim","dimnames"))]
+  for (i in seq_along(attrs))
+    attr(x, attrs[i]) = NULL
+  
+  cat("Group: ", group_id, "\n", sep = "")
+  print.default(x, ...)
 }

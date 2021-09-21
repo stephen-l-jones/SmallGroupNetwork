@@ -511,7 +511,6 @@
 #' }
 #' 
 #' f_ignore = function(x) {
-#'   incl_NA = ifelse(any(is.na(x)), "always", "no")
 #'   y = apply(x, 2, function(fcol) {
 #'     u          = sort(unique(fcol), na.last = TRUE)
 #'     tbl        = table(fcol, useNA = "ifany")

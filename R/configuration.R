@@ -205,10 +205,7 @@ print.configuration = function(x, ...) {
   size = attr(x, "group_size")
   type = attr(x, "type")
   
-  attrs = names(attributes(x))
-  attrs = attrs[!(attrs %in% c("dim","dimnames"))]
-  for (i in seq_along(attrs))
-    attr(x, attrs[i]) = NULL
+  x = strip_attr(x)
   
   cat("Configuration: ", name, "\n", sep = "")
   print.default(x, na.print = "-", ...)

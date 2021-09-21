@@ -39,8 +39,16 @@ mbindlist = function(x) {
   )
 }
 
+strip_attr = function(x, keep = c("dim","dimnames","names")) {
+  attrs = names(attributes(x))
+  for (a in attrs[!(attrs %in% keep)]) {
+    attr(x, a) = NULL
+  }
+  return(x)
+}
+
 #' @importFrom foreach foreach %do% %dopar%
-pbLapply = function(x, fun, cl = NULL, export = NULL, packages = NULL, ...) {
+pbLapply = function(x, fun, cl = NULL, combine = "list", export = NULL, packages = NULL, ...) {
   pb = txtProgressBar(
     max   = length(x), 
     width = min(getOption("width"), 100),
@@ -50,7 +58,8 @@ pbLapply = function(x, fun, cl = NULL, export = NULL, packages = NULL, ...) {
     out = foreach(
       i             = seq_along(x),
       obj           = x,
-      .combine      = "c"
+      .combine      = combine,
+      .multicombine = TRUE
     ) %do% {
       y = fun(obj, ...)
       setTxtProgressBar(pb, i)
@@ -64,7 +73,8 @@ pbLapply = function(x, fun, cl = NULL, export = NULL, packages = NULL, ...) {
     opts     = list(progress = progress)
     out = foreach(
       obj           = x,
-      .combine      = "c",
+      .combine      = combine,
+      .multicombine = TRUE,
       .packages     = packages,
       .export       = export,
       .options.snow = opts

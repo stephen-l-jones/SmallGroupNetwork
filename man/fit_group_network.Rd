@@ -7,14 +7,7 @@
 \alias{fit_group_network.network}
 \title{Fit configurations to group network}
 \usage{
-fit_group_network(
-  x,
-  configuration_set,
-  all_best = FALSE,
-  parallel = FALSE,
-  cores = NULL,
-  ...
-)
+fit_group_network(x, configuration_set, ...)
 
 \method{fit_group_network}{default}(
   x,
@@ -23,7 +16,7 @@ fit_group_network(
   weights,
   group_sizes,
   type = c("unspecified", "edgelist", "adjacency"),
-  all_best = FALSE,
+  ties.method = c("all", "first", "last", "random"),
   parallel = FALSE,
   cores = NULL,
   ...
@@ -33,7 +26,7 @@ fit_group_network(
   x,
   configuration_set,
   attrname,
-  all_best = FALSE,
+  ties.method = c("all", "first", "last", "random"),
   parallel = FALSE,
   cores = NULL,
   ...
@@ -43,7 +36,7 @@ fit_group_network(
   x,
   configuration_set,
   attrname,
-  all_best = FALSE,
+  ties.method = c("all", "first", "last", "random"),
   parallel = FALSE,
   cores = NULL,
   ...
@@ -57,17 +50,6 @@ groups when \code{group_index} is provided.}
 \item{configuration_set}{A \code{configuration_set} object, which is a list of configurations
 (see \code{\link{configuration_set}}).}
 
-\item{all_best}{If \code{all_best = TRUE}, returns all best-fitting configurations that fit a group
-network equally well (if more than one do). If \code{all_best = FALSE}, returns one best-fitting
-configuration among those that fit a network equally well. When \code{all_best = TRUE},
-performance will be slower.}
-
-\item{parallel}{Use parallel processing. Parallel processing can only be used when multiple group networks are
-being fit.}
-
-\item{cores}{Number of cores to use with parallel processing. If \code{parallel = TRUE}, and
-\code{cores = NULL}, then the function will detect the number of cores available.}
-
 \item{group_index}{Vector of names or indices for groups when \code{x} is an edge list for multiple groups. Length
 should equal the number of rows in \code{x}.}
 
@@ -78,6 +60,12 @@ should equal the number of rows in \code{x}.}
 
 \item{type}{Used to specify \code{x}. Can be \code{"unspecified"}, \code{"edgelist"}, or \code{"adjacency"}.
 If unspecified, the function will guess whether \code{x} is an edge list or adjacency matrix.}
+
+\item{parallel}{Use parallel processing. Parallel processing can only be used when multiple group networks are
+being fit.}
+
+\item{cores}{Number of cores to use with parallel processing. If \code{parallel = TRUE}, and
+\code{cores = NULL}, then the function will detect the number of cores available.}
 
 \item{attrname}{Attribute name that holds the edge weights (usually \code{"weight"}).}
 }
