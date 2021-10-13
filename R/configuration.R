@@ -178,6 +178,13 @@ configuration.configuration = function(x, description, type, loops, id, ...) {
   )
 }
 
+
+#' @export
+configuration.configuration_solve = function(x, ...) {
+  x = as.configuration.configuration_solve(x, ...)
+  configuration.configuration(x, ...)
+}
+
 #' @export
 configuration.list = function(x, ...) {
   configuration.default(x[[1]], ...)
@@ -191,6 +198,17 @@ as.configuration = function(x, ...) {
 
 #' @export
 as.configuration.configuration = function(x, ...) {
+  return(x)
+}
+
+#' @export
+as.configuration.configuration_solve = function(x, ...) {
+  if (attr(x, "type") == "binary") {
+    x[x == -1] = 0
+  } 
+  attr(x, "FUN")      = NULL
+  attr(x, "maximize") = NULL
+  class(x) = c("configuration","matrix")
   return(x)
 }
 
@@ -247,3 +265,38 @@ is.configuration = function(x, ...) {
   return(TRUE)
 }
 
+configuration_solve = function(x, ...) {
+  UseMethod("configuration_solve", x)
+}
+
+#' @export
+configuration_solve.configuration = function(x, ...) {
+  if (attr(x, "type") == "binary") {
+    x[x == 0] = -1
+  } 
+  attr(x, "FUN")      = ifelse(attr(x, "type") == "binary", prodNA, absdiffNA)
+  attr(x, "maximize") = (attr(x, "type") == "binary")
+  class(x) = c("configuration_solve","configuration","matrix")
+  return(x)
+}
+
+#' @export
+configuration_solve.default = function(x, ...) {
+  x = as.configuration(x)
+  if (attr(x, "type") == "binary") {
+    x[x == 0] = -1
+  } 
+  attr(x, "FUN")      = ifelse(attr(x, "type") == "binary", prodNA, absdiffNA)
+  attr(x, "maximize") = (attr(x, "type") == "binary")
+  class(x) = c("configuration_solve","configuration","matrix")
+  return(x)
+}
+
+#' @export
+configuration_solve.configuration_solve = function(x, ...) {
+  return(x)
+}
+
+as.configuration_solve = function(x, ...) {
+  UseMethod("configuration_solve", x)
+}

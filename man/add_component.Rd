@@ -4,13 +4,16 @@
 \alias{add_component}
 \title{Add a network component}
 \usage{
-add_component(component, configuration = NULL)
+add_component(component, configuration = NULL, group_size = NULL, ...)
 }
 \arguments{
-\item{component}{A square adjacency matrix, two-column edge list or other object that can be converted to a
-\code{configuration} or \code{configuration_set} (see \code{\link{configuration}}).}
+\item{component}{A square adjacency matrix, two-column edge list or other object that can be converted
+to a \code{configuration} or \code{configuration_set}
+(see \code{\link{configuration}}).}
 
 \item{configuration}{A \code{configuration} or other object that can be converted to a \code{configuration}}
+
+\item{group_size}{The size of the resultant configuration. Ignored if a configuration is given.}
 }
 \value{
 A \code{configuration} object.
@@ -22,8 +25,8 @@ A \code{configuration} object.
 A component is the full subset of connected vertices (or nodes) in a network which is
 unconnected to other subsets. If a \code{configuration} is provided, components
 are added as block diagonals to available space in the group configuration (i.e.,
-0-value blocks). If no \code{configuration} is given, the components are combined
-block-diagonally into one configuration.
+0-value blocks). If no \code{configuration} nor \code{group_size} are given,
+the components are combined block-diagonally into one configuration.
 }
 \examples{
 f = configuration(cbind(c(1,2),c(2,1)), group_size = 8, matrix_type = "edgelist")

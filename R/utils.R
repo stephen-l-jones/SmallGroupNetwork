@@ -1,12 +1,17 @@
 
 absdiffNA = function(x, y) {
-  ifelse(is.na(x) | is.na(y), 0, abs(x - y))
+  z = abs(x - y)
+  z[is.na(z)] = 0
+  z
 }
 
 prodNA = function(x, y) {
-  ifelse(is.na(x) | is.na(y), 0, x * y)
+  z = x * y
+  z[is.na(z)] = 0
+  z
 }
 
+#' @export
 expand_int_matrix = function(...) {
   args  = list(...)
   nargs = length(args)
@@ -20,6 +25,7 @@ expand_int_matrix = function(...) {
     m[, i] = x[rep.int(rep.int(seq_len(d[i]), rep.int(rep_fac, d[i])), orep)]
     rep_fac = rep_fac * d[i]
   }
+  colnames(m) = names(args)
   return(m)
 }
 
@@ -82,6 +88,7 @@ pbLapply = function(x, fun, cl = NULL, combine = "list", export = NULL, packages
       fun(obj, ...)
     }  
   }
+  names(out) = names(x)
   return(out)
 }
 

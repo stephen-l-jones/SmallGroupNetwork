@@ -61,6 +61,12 @@ should equal the number of rows in \code{x}.}
 \item{type}{Used to specify \code{x}. Can be \code{"unspecified"}, \code{"edgelist"}, or \code{"adjacency"}.
 If unspecified, the function will guess whether \code{x} is an edge list or adjacency matrix.}
 
+\item{ties.method}{When \code{ties.method = "all"}, the function will return a \code{configuration_fit_set} object
+for each group network. A \code{configuration_fit_set} is a list of one or more
+\code{configuration_fit} objects that all have the best fit. When \code{ties.method} is
+\code{"first"}, \code{"last"}, or \code{"random"}, the function will return the first, last,
+or a random \code{configuration_fit} from a set.}
+
 \item{parallel}{Use parallel processing. Parallel processing can only be used when multiple group networks are
 being fit.}
 
@@ -70,7 +76,10 @@ being fit.}
 \item{attrname}{Attribute name that holds the edge weights (usually \code{"weight"}).}
 }
 \value{
-A list of \code{configuration_fit} objects, each of which has the following elements:
+When \code{ties.method = "all"}, the function returns a list of
+\code{configuration_fit_set} objects, one for each group network. Otherwise it
+returns a list of \code{configuration_fit} objects, one for each group network.
+A \code{configuration_fit} object has the following elements:
 \itemize{
 \item{\code{x}: The group network (adjacency matrix) used to fit a configuration.}
 \item{\code{fit}: The best-fitting configuration with its rows and columns reordered to
@@ -97,10 +106,13 @@ must have the same dimensions as a group network to be fitted. The function
 maximizes the score for binary configurations and minimizes the score for weighted
 configurations.
 
-Fitting is done using a linear program and the \code{ROI} package. \code{ROI} allows for
+Fitting is done using a linear program and the \code{ROI} package. \code{\link{ROI}} allows for
 different solvers to be used. The default solver is "glpk" using the \code{Rglpk} package. Other
 solvers may be used by passing the solver name and any solver parameters through \code{...}
-to the \code{\link{ROI_solve}} function.
+to the \code{\link{ROI_solve}} function (e.g., \code{solver = "lpsolve"}). When using other
+solvers with parallel processing, also pass the solver package name and the
+associated \code{ROI.plugin.*} package name through \code{...} using a
+"packages" parameter (e.g., \code{packages = c("lpSolve","ROI.plugin.lpsolve")}).
 
 \strong{Binary configurations.}
 When fitting binary configurations, a group network's negative values indicate the

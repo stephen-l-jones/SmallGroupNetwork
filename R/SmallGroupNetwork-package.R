@@ -4,6 +4,8 @@
 #' configuration. See \code{\link{fit_group_network}} and \code{\link{configuration}}.
 #' 
 #' @docType package
+#' @import Rcpp mathjaxr
+#' @importFrom Rcpp evalCpp
+#' @useDynLib SmallGroupNetwork
 #' @name SmallGroupNetwork
-#' @import mathjaxr
 NULL

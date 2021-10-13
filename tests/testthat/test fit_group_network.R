@@ -9,7 +9,7 @@ test_that("fit_group_network", {
     configuration(add_component(c(star(2), star(2))), description = "2 dyads")#,
     #configuration(subgroup(4), description = "team")
   ))
-  y = fit_group_network(w, f, solver = "lpsolve")
+  y = fit_group_network(w, f, solver = "naive")
   attr(w, "group_name") = "G1"
   expect_equal(names(y), "G1")
   expect_equal(y[[1]]$x, w)
@@ -44,10 +44,10 @@ test_that("fit_group_network", {
   diag(w) = 0
   f = set_configuration_ids(list(
     star(3:8),
-    subgroup_all(2:5),
+    subgroup_all(2:8),
     subgroup_all(2:6, relation = "between")
   ))
-  y = fit_group_network(w, f, solver = "gurobi")
+  y = fit_group_network(list(w, w), f, solver = "gurobi", parallel = TRUE, packages = c("ROI.plugin.gurobi","gurobi"))
   attr(y$G1, "duration")
   y = lapply(f, fit_group_network, x = w, solver = "gurobi")
   rowSums(lapply(y, function(a) attr(a$G1, "duration")))

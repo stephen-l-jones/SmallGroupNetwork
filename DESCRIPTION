@@ -22,6 +22,7 @@ Imports:
   iterators,
   mathjaxr,
   parallel,
+  Rcpp,
   Rglpk,
   ROI,
   ROI.plugin.glpk,
@@ -29,6 +30,8 @@ Imports:
   snow
 RdMacros: 
   mathjaxr
+LinkingTo: 
+  Rcpp
 Suggests: 
-    testthat (>= 3.0.0)
+  testthat (>= 3.0.0)
 Config/testthat/edition: 3

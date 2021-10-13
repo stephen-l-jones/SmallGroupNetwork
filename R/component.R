@@ -4,18 +4,21 @@
 #' \code{component} adds one or more network components to a configuration. 
 #' 
 #' @param component
-#' A square adjacency matrix, two-column edge list or other object that can be converted to a 
-#' \code{configuration} or \code{configuration_set} (see \code{\link{configuration}}).
+#' A square adjacency matrix, two-column edge list or other object that can be converted 
+#' to a \code{configuration} or \code{configuration_set} 
+#' (see \code{\link{configuration}}).
 #' @param configuration
 #' A \code{configuration} or other object that can be converted to a \code{configuration}
+#' @param group_size
+#' The size of the resultant configuration. Ignored if a configuration is given.
 #' @return
 #' A \code{configuration} object.
 #' @details
 #' A component is the full subset of connected vertices (or nodes) in a network which is 
 #' unconnected to other subsets. If a \code{configuration} is provided, components
 #' are added as block diagonals to available space in the group configuration (i.e., 
-#' 0-value blocks). If no \code{configuration} is given, the components are combined 
-#' block-diagonally into one configuration.
+#' 0-value blocks). If no \code{configuration} nor \code{group_size} are given,
+#' the components are combined block-diagonally into one configuration.
 #' @examples
 #' f = configuration(cbind(c(1,2),c(2,1)), group_size = 8, matrix_type = "edgelist")
 #' m = matrix(c(0,1,1,1,0,0,1,0,0), 3)
@@ -24,25 +27,34 @@
 #' add_component(m, f)
 #' add_component(m)
 #' @export
-add_component = function(component, configuration = NULL) {
+add_component = function(component, configuration = NULL, group_size = NULL, ...) {
   if (!is.list(component)) {
     component = list(component)
   }
   if (is.null(configuration)) {
     component = as.configuration_set(component)
-    g         = sum(lengths(lapply(component, diag)))
-    f         = as.configuration(matrix(0L, g, g), matrix_type = "adjacency")
+    if (is.null(group_size)) {
+      g = sum(lengths(lapply(component, diag)))
+    } else {
+      g = group_size
+    }
+    f = configuration(0, group_size = g, matrix_type = "adjacency", ...)
     if (!get_attribute(component[[1]], "loops")) {
       diag(f) = NA
     }
   } else {
-    f = as.configuration(configuration)
+    if (is.null(group_size)) {
+      g = length(diag(configuration))
+    } else {
+      g = group_size
+    }
+    f = configuration(configuration, group_size = g, ...)
     component = as.configuration_set(component)
     g = attr(f, "group_size")
   }
-  if (length(unique(get_attribute(c(component, configuration), "type"))) > 1)
-    stop("All components and the configuraiton must be of the same type")
-  if (length(unique(get_attribute(c(component, configuration), "loops"))) > 1)
+  if (length(unique(get_attribute(c(component, list(f)), "type"))) > 1)
+    stop("All components and the configuration must be of the same type")
+  if (length(unique(get_attribute(c(component, list(f)), "loops"))) > 1)
     stop("The loops attribute must be the same for all components and the configuration")
   sf = space_finder(f)
   sapply(component, function(m) {

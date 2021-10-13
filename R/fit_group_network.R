@@ -11,14 +11,11 @@
 #' @param configuration_set
 #' A \code{configuration_set} object, which is a list of configurations 
 #' (see \code{\link{configuration_set}}).
-#' @param parallel
-#' Use parallel processing. Parallel processing can only be used when multiple group networks are 
-#' being fit.
-#' @param cores
-#' Number of cores to use with parallel processing. If \code{parallel = TRUE}, and 
-#' \code{cores = NULL}, then the function will detect the number of cores available.
 #' @return
-#' A list of \code{configuration_fit} objects, each of which has the following elements:
+#' When \code{ties.method = "all"}, the function returns a list of 
+#' \code{configuration_fit_set} objects, one for each group network. Otherwise it
+#' returns a list of \code{configuration_fit} objects, one for each group network.
+#' A \code{configuration_fit} object has the following elements:
 #' \itemize{
 #'   \item{\code{x}: The group network (adjacency matrix) used to fit a configuration.}
 #'   \item{\code{fit}: The best-fitting configuration with its rows and columns reordered to
@@ -40,10 +37,13 @@
 #' maximizes the score for binary configurations and minimizes the score for weighted
 #' configurations.
 #' 
-#' Fitting is done using a linear program and the \code{ROI} package. \code{ROI} allows for
+#' Fitting is done using a linear program and the \code{ROI} package. \code{\link{ROI}} allows for
 #' different solvers to be used. The default solver is "glpk" using the \code{Rglpk} package. Other
 #' solvers may be used by passing the solver name and any solver parameters through \code{...}
-#' to the \code{\link{ROI_solve}} function.
+#' to the \code{\link{ROI_solve}} function (e.g., \code{solver = "lpsolve"}). When using other
+#' solvers with parallel processing, also pass the solver package name and the 
+#' associated \code{ROI.plugin.*} package name through \code{...} using a 
+#' "packages" parameter (e.g., \code{packages = c("lpSolve","ROI.plugin.lpsolve")}).
 #' 
 #' \strong{Binary configurations.}
 #' When fitting binary configurations, a group network's negative values indicate the 
@@ -109,6 +109,18 @@ fit_group_network = function(x, configuration_set, ...) {
 #' @param type
 #' Used to specify \code{x}. Can be \code{"unspecified"}, \code{"edgelist"}, or \code{"adjacency"}. 
 #' If unspecified, the function will guess whether \code{x} is an edge list or adjacency matrix.
+#' @param ties.method
+#' When \code{ties.method = "all"}, the function will return a \code{configuration_fit_set} object
+#' for each group network. A \code{configuration_fit_set} is a list of one or more
+#' \code{configuration_fit} objects that all have the best fit. When \code{ties.method} is
+#' \code{"first"}, \code{"last"}, or \code{"random"}, the function will return the first, last,
+#' or a random \code{configuration_fit} from a set.
+#' @param parallel
+#' Use parallel processing. Parallel processing can only be used when multiple group networks are 
+#' being fit.
+#' @param cores
+#' Number of cores to use with parallel processing. If \code{parallel = TRUE}, and 
+#' \code{cores = NULL}, then the function will detect the number of cores available.
 #' @examples
 #' f_list = c(
 #'   star(4),
@@ -143,7 +155,8 @@ fit_group_network.default = function(x, configuration_set, group_index, weights,
   }
   
   if (type == "edgelist") {
-    if (!is.list(x)) {
+    if (!is.list(x) | is.data.frame(x)) {
+      x = as.data.frame(x)
       if (dim(x)[2] != 2)
         stop("an edgelist must have two columns.")   
       if (missing(weights)) {
@@ -156,12 +169,15 @@ fit_group_network.default = function(x, configuration_set, group_index, weights,
         x = list(x)
       }
     }
-    v_list = lapply(x, function(el) unique(c(el[, 1:2])))
+    v_list = lapply(x, function(el) unique(c(el[, 1], el[, 2])))
   } else {
-    if (!is.list(x)) {
-      x = list(x)
+    if (!is.list(x) | is.data.frame(x)) {
+      x = list(as.matrix(x))
+    } else {
+      x = lapply(x, as.matrix)
     }
     v_list = lapply(x, function(adj) {
+      adj = as.matrix(adj)
       if (is.null(colnames(adj))) {
         return(seq_along(diag(adj)))
       }
@@ -184,10 +200,11 @@ fit_group_network.default = function(x, configuration_set, group_index, weights,
     id         = ifelse(!is.na(v[g_ndx]), v[g_ndx], g_ndx)
     m          = matrix(0L, group_size, group_size, dimnames = list(id, id))
     if (type == "edgelist") {
-      m[d[, 1:2]] = d[, 3]
+      m[as.matrix(d[, 1:2])] = d[, 3]
     } else {
       m[seq_along(v), seq_along(v)] = d
-    }   
+    } 
+    return(m)
   })
   names(w_list) = names(x)
   
@@ -236,17 +253,18 @@ fit_group_network.network = function(x, configuration_set, attrname,
   fit_list(w_list, configuration_set, ties.method, parallel, cores, ...)
 }
 
-fit_list = function(w_list, f_list, ties.method, parallel, cores, ...) {
+fit_list = function(w_list, f_list, ties.method, parallel, cores, packages, ...) {
 
-  f_list   = as.configuration_set(f_list)
-  w_list   = set_group_attributes(w_list)
-  match_wf = match_index(w_list, f_list)
-  iter_wf  = split(cbind(
-    w_list[match_wf[, "w"]], 
-    f_list[match_wf[, "f"]]
-  ), seq_len(nrow(match_wf)))
+  f_list   <- as.configuration_set(f_list)
+  w_list   <- set_group_attributes(w_list)
+  wf_list  <- match_wf(w_list, f_list)
+  # wf_match <- match_on_group_size(w_list, f_list)
 
   if (parallel && length(w_list) > 1 && (is.null(cores) || cores > 1)) {
+    pkgs = character(0)
+    if (!missing(packages)) {
+      pkgs = c(pkgs, packages)
+    }
     cores = min(cores, parallel::detectCores(), length(w_list))
     cat(sprintf("Parallel processing with %s cores...\n", cores))
     cl = snow::makeCluster(
@@ -256,10 +274,11 @@ fit_list = function(w_list, f_list, ties.method, parallel, cores, ...) {
     tryCatch(
       {
         solution = pbLapply(
-          x         = iter_wf,
-          fun       = solve_fit,
-          cl        = cl,
-          packages  = c("ROI","ROI.plugin.glpk","Rglpk","slam","SmallGroupNetwork"),
+          x           = wf_list,
+          fun         = solve_fit,
+          cl          = cl,
+          packages    = pkgs,
+          ties.method = ties.method,
           ...
         )
       },
@@ -271,12 +290,13 @@ fit_list = function(w_list, f_list, ties.method, parallel, cores, ...) {
     )
   } else{
     solution = pbLapply(
-      x         = iter_wf,
-      fun       = solve_fit,
+      x           = wf_list,
+      fun         = solve_fit,
+      ties.method = ties.method,
       ...
     )
   }
-  choose_optimal(w_list, f_list, match_wf, solution, ties.method)
+  return(solution)
 }
 
 set_group_attributes = function(x) {
@@ -299,40 +319,38 @@ set_group_attributes = function(x) {
   return(x)
 }
 
-match_index = function(w_list, f_list) {
-  w_size = sapply(w_list, nrow)
-  f_size = get_attribute(f_list, "group_size")
-  
-  ndx = which(matrix(
-    data     = kronecker(w_size, f_size, FUN = "-") == 0, 
-    nrow     = length(f_size)
-  ), arr.ind = TRUE)[, 2:1]
-  colnames(ndx) = c("w","f")
-  return(ndx)
+match_on_group_size <- function(w_list, f_list) {
+  f_size   <- get_attribute(f_list, "group_size")
+  w_size   <- lapply(w_list, nrow)
+  on_match <- kronecker(f_size, w_size, "-") == 0
+  wf_match <- which(matrix(on_match, length(w_size)), arr.ind = TRUE, useNames = FALSE)
+  colnames(wf_match) <- c("w", "f")
+  return(wf_match)
 }
 
-choose_optimal = function(w_list, f_list, match_wf, solution, ties.method) {
-  f_type  = get_attribute(f_list, "type")[match_wf[, 2]]
-  optimal = lapply(seq_along(w_list), function(i) {
-    match_ndx = which(match_wf[, 1] == i)
-    if (length(match_ndx) == 0) {
-      set = list(make_configuration_fit(w_list[[i]], NULL, NULL, NULL, NULL, NULL, NULL, NA, NA))
-    } else {
-      f_type = get_attribute(solution[match_ndx], "type")
-      set = as.configuration_fit_set(tapply(solution[match_ndx], f_type, function(x) {
-        s = sapply(x, "[[", "score")
-        x[s == max(s)]
-      }, simplify = FALSE))
-    }
-    switch(
-      ties.method,
-      all    = set,
-      first  = set[[1]],
-      last   = set[[length(set)]],
-      random = set[[sample.int(length(set), 1)]]
+match_wf = function(w_list, f_list) {
+  f_size = get_attribute(f_list, "group_size")
+  lapply(w_list, function(w) {
+    list(
+      w = w,
+      f_list = f_list[f_size == nrow(w)]
     )
   })
-  names(optimal) = names(w_list)
-  return(optimal)
 }
+
+# configuration_permutations <- function(f_list) {
+#   pair <- lapply(f_list, configuration_pairing)
+#   freq <- lapply(pair, lengths)
+#   perm_obj <- lapply(freq, function(q) {
+#     ipermutations(v = -seq_along(q), freq = q)
+#   })
+#   perm_n  <- sapply(freq, npermutations, x = NULL, k = NULL, n = NULL, v = NULL)
+#   data.frame(
+#     obj = perm_obj,
+#     n   = perm_n
+#   )
+# }
+
+
+
 
