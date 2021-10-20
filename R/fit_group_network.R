@@ -1,4 +1,3 @@
-
 #' Fit configurations to group network
 #' 
 #' \loadmathjax 
@@ -32,10 +31,10 @@
 #'   \item{\code{solver}: Name of solver used.}
 #' }
 #' @details 
-#' Configurations and group networks are represented as square adjacency matrices. A configuration 
-#' must have the same dimensions as a group network to be fitted. The function 
-#' maximizes the score for binary configurations and minimizes the score for weighted
-#' configurations.
+#' Configurations and group networks are represented as square adjacency matrices. 
+#' A configuration must have the same dimensions as a group network to be fitted. 
+#' The function \code{\link{fit_group_network}} maximizes the score for binary 
+#' configurations and minimizes the score for weighted configurations.
 #' 
 #' Fitting is done using a linear program and the \code{ROI} package. \code{\link{ROI}} allows for
 #' different solvers to be used. The default solver is "glpk" using the \code{Rglpk} package. Other
@@ -85,7 +84,6 @@
 #' as \mjeqn{x_g}{\emph{x_g}} are simultaneously fit, and the function returns the \code{id} 
 #' of \mjeqn{F}{\emph{F}} for the weighted configuration \mjeqn{f^\ast}{\emph{f*}} that 
 #' minimizes the score.
-#' 
 #' @seealso \code{\link{configuration}}, \code{\link{configuration_set}}
 #' @export
 fit_group_network = function(x, configuration_set, ...) {

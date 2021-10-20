@@ -10,19 +10,34 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// rcpp_hello_world
-List rcpp_hello_world();
-RcppExport SEXP _SmallGroupNetwork_rcpp_hello_world() {
+// best_combination
+IntegerVector best_combination(NumericVector Rw, NumericVector Rf, IntegerVector Rv, bool loops, bool prod);
+RcppExport SEXP _SmallGroupNetwork_best_combination(SEXP RwSEXP, SEXP RfSEXP, SEXP RvSEXP, SEXP loopsSEXP, SEXP prodSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpp_hello_world());
+    Rcpp::traits::input_parameter< NumericVector >::type Rw(RwSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type Rf(RfSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type Rv(RvSEXP);
+    Rcpp::traits::input_parameter< bool >::type loops(loopsSEXP);
+    Rcpp::traits::input_parameter< bool >::type prod(prodSEXP);
+    rcpp_result_gen = Rcpp::wrap(best_combination(Rw, Rf, Rv, loops, prod));
     return rcpp_result_gen;
+END_RCPP
+}
+// test_rcpp
+void test_rcpp();
+RcppExport SEXP _SmallGroupNetwork_test_rcpp() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    test_rcpp();
+    return R_NilValue;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_SmallGroupNetwork_rcpp_hello_world", (DL_FUNC) &_SmallGroupNetwork_rcpp_hello_world, 0},
+    {"_SmallGroupNetwork_best_combination", (DL_FUNC) &_SmallGroupNetwork_best_combination, 5},
+    {"_SmallGroupNetwork_test_rcpp", (DL_FUNC) &_SmallGroupNetwork_test_rcpp, 0},
     {NULL, NULL, 0}
 };
 

@@ -47,10 +47,10 @@ test_that("fit_group_network", {
     subgroup_all(2:8),
     subgroup_all(2:6, relation = "between")
   ))
-  y = fit_group_network(list(w, w), f, solver = "gurobi", parallel = TRUE, packages = c("ROI.plugin.gurobi","gurobi"))
-  attr(y$G1, "duration")
+  system.time({y = fit_group_network(list(w, w), f, solver = "naive", parallel = FALSE)})
+  
+  system.time({y = fit_group_network(list(w, w), f, solver = "gurobi", parallel = FALSE, packages = c("ROI.plugin.gurobi","gurobi"))})
+  attr(y$G1[[1]], "duration")
   y = lapply(f, fit_group_network, x = w, solver = "gurobi")
   rowSums(lapply(y, function(a) attr(a$G1, "duration")))
-  
-  
 })

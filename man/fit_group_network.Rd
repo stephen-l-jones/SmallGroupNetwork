@@ -101,10 +101,10 @@ A \code{configuration_fit} object also has the following attributes:
 \code{fit_group_network} selects a configuration from a set that best fits a group network.
 }
 \details{
-Configurations and group networks are represented as square adjacency matrices. A configuration
-must have the same dimensions as a group network to be fitted. The function
-maximizes the score for binary configurations and minimizes the score for weighted
-configurations.
+Configurations and group networks are represented as square adjacency matrices.
+A configuration must have the same dimensions as a group network to be fitted.
+The function \code{\link{fit_group_network}} maximizes the score for binary
+configurations and minimizes the score for weighted configurations.
 
 Fitting is done using a linear program and the \code{ROI} package. \code{\link{ROI}} allows for
 different solvers to be used. The default solver is "glpk" using the \code{Rglpk} package. Other
