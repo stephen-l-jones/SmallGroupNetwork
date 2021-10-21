@@ -1,85 +1,5 @@
-
-solve_fit = function(x, ties.method, ...) {
-  type = get_attribute(x$f_list, "type")
-  types = unique(type)
-  if (length(types) == 1) {
-    
-    return(solve_fit_by_type(
-      w           = x$w, 
-      f_list      = x$f_list[type == types[1]], 
-      ties.method = ties.method,
-      ...
-    ))
-  } else {
-    
-    return(list(
-      binary = solve_fit_by_type(
-        w           = x$w, 
-        f_list      = x$f_list[type == "binary"], 
-        ties.method = ties.method,
-        ...
-      ),
-      weighted = solve_fit_by_type(
-        w           = x$w, 
-        f_list      = x$f_list[type == "weighted"], 
-        ties.method = ties.method,
-        ...
-      )
-    ))
-  }
-}
-
-solve_fit_by_type = function(w, f_list, ties.method, solver = "glpk", ...) {
-  maximize = (get_attribute(f_list[[1]], "type") == "binary")
-  if (length(f_list) == 0) {
-    fit_list = list(make_configuration_fit(
-      x                = w,
-      configuration_id = NULL,
-      fit              = NULL,
-      score            = NULL,
-      potential        = NULL,
-      lp_structure     = NULL,
-      ROI_obj          = NULL,
-      duration         = 0,
-      solver           = solver
-    ))
-  } else {
-    prescore  = sapply(f_list, configuration_potential_score, w = w, solver = solver, ...)
-    order_ndx = order(prescore, decreasing = maximize)
-    fit_list  = list(solve_fit_solver(w, f_list[[order_ndx[1]]], solver, ...))
-    scores    = fit_list[[1]]$score
-    i         = 2
-    while(i <= length(order_ndx)) {
-      if (maximize) {
-        if (max(scores) > prescore[order_ndx[i]]) break
-      } else {
-        if (min(scores) < prescore[order_ndx[i]]) break
-      }
-      fit_list[[i]] = solve_fit_solver(w, f_list[[order_ndx[i]]], solver, ...)
-      scores[i]     = fit_list[[i]]$score
-      i = i + 1   
-    }
-    fit_list = as.configuration_fit_set(fit_list[scores == max(scores)])   
-  }
-  switch(
-    ties.method,
-    all    = fit_list,
-    first  = fit_list[[1]],
-    last   = fit_list[[length(fit_list)]],
-    random = fit_list[[sample.int(length(fit_list), 1)]]
-  )
-}
-
-solve_fit_solver = function(w, f, solver, ...) {
-  if (solver == "naive") {
-    return(permute_solve_fit(w, f, ...))
-  } else {
-    return(lp_solve_fit(w, f, solver, ...))
-  }
-}
-
 #' @import ROI ROI.plugin.glpk Rglpk
-lp_solve_fit = function(w, f, solver, ...) {
+lp_solve_fit = function(w, f, solver = "gplk", ...) {
   f_solve  = configuration_solve(f)
   edge     = set_edge(f_solve)
   vertex   = set_vertex(f_solve)
@@ -272,16 +192,6 @@ prepare_fit = function(obj_solution, f, vertex, vars) {
     attributes(f)[!(names(attributes(f)) %in% c("dim","dimnames"))]
   )
   return(m)
-}
-
-potential_score = function(w, f_solve) {
-  dim_f   = dim(f_solve)
-  include = ifelse(rep(attr(f_solve, "loops"), prod(dim_f)), TRUE, .row(dim_f) != .col(dim_f))
-  f_edge  = f_solve[c(include)]
-  w_edge  = w[c(include)]
-  
-  edge_coef = matrix(kronecker(f_edge, w_edge, attr(f_solve, "FUN")), length(f_edge))
-  return(sum(apply(edge_coef, 1, ifelse(attr(f_solve, "maximize"), "max", "min"))))
 }
 
 config_constraints = function(constr, vars) {

@@ -7,13 +7,14 @@
 add_component(component, configuration = NULL, group_size = NULL, ...)
 }
 \arguments{
-\item{component}{A square adjacency matrix, two-column edge list or other object that can be converted
-to a \code{configuration} or \code{configuration_set}
-(see \code{\link{configuration}}).}
+\item{component}{A square adjacency matrix, two-column edge list or other object that can be
+converted to a \code{configuration} or \code{configuration_set}.}
 
-\item{configuration}{A \code{configuration} or other object that can be converted to a \code{configuration}}
+\item{configuration}{A \code{configuration} or other object that can be converted to a \code{
+configuration}. If \code{NULL}, a configuration is built using the component(s)
+in the \code{component} parameter.}
 
-\item{group_size}{The size of the resultant configuration. Ignored if a configuration is given.}
+\item{group_size}{The size for the returned configuration. Ignored if a configuration is given.}
 }
 \value{
 A \code{configuration} object.
@@ -22,17 +23,21 @@ A \code{configuration} object.
 \code{component} adds one or more network components to a configuration.
 }
 \details{
-A component is the full subset of connected vertices (or nodes) in a network which is
-unconnected to other subsets. If a \code{configuration} is provided, components
-are added as block diagonals to available space in the group configuration (i.e.,
-0-value blocks). If no \code{configuration} nor \code{group_size} are given,
-the components are combined block-diagonally into one configuration.
+A component is the full subset of connected vertices (or nodes) in a network
+which is unconnected to other subsets. If a \code{configuration} is provided,
+components are added as block diagonals to available space in the
+configuration (i.e.,  0-value blocks). If no \code{configuration} nor \code{
+group_size} are given, the components are combined block-diagonally into one
+configuration.
 }
 \examples{
-f = configuration(cbind(c(1,2),c(2,1)), group_size = 8, matrix_type = "edgelist")
-m = matrix(c(0,1,1,1,0,0,1,0,0), 3)
+f <- configuration(cbind(c(1,2),c(2,1)), group_size = 8, input_type = "edgelist")
+m <- matrix(c(0,1,1,1,0,0,1,0,0), 3)
 add_component(m, f)
-m = list(m, matrix(c(0,1,0,1,0,1,0,1,0), 3))
-add_component(m, f)
-add_component(m)
+m_ls <- list(m, matrix(c(0,1,0,1,0,1,0,1,0), 3))
+add_component(m_ls, group_size = 7)
+add_component(m_ls, description = "2 components")
+}
+\seealso{
+\code{\link{configuration}}, \code{\link{configuration_set}}
 }

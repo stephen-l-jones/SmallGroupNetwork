@@ -2,25 +2,27 @@
 % Please edit documentation in R/configuration_set.R
 \name{configuration_set}
 \alias{configuration_set}
-\alias{set_configuration_ids}
 \alias{as.configuration_set}
+\alias{is.configuration_set}
+\alias{set_configuration_ids}
 \title{Configuration set}
 \usage{
 configuration_set(...)
 
-set_configuration_ids(x, ids = seq_along(x), ...)
+as.configuration_set(x)
 
-as.configuration_set(x, ...)
+is.configuration_set(x)
+
+set_configuration_ids(x, ids = seq_along(x), ...)
 }
 \arguments{
-\item{...}{\code{configuration} objects, \code{configuration_set} objects, matrices, edge lists, or
-other objects that can be coerced to \code{configuration} objects
-(see \code{\link{configuration}}).}
+\item{...}{\code{configuration} objects, \code{configuration_set} objects, matrices,
+edge lists, or other objects that can be coerced to \code{configuration} objects.}
 
-\item{x}{A list of \code{configuration} objects, matrices, edge lists, or other objects that can be
-coerced to \code{configuration} objects.}
+\item{x}{A list of \code{configuration} objects, matrices, edge lists, or other objects
+that can be coerced to \code{configuration} objects.}
 
-\item{ids}{A vector of ids of the same length as \code{x}.}
+\item{ids}{A vector of IDs of the same length as \code{x}.}
 }
 \value{
 A \code{configuration_set}.
@@ -30,11 +32,17 @@ A \code{configuration_set}.
 a list of configurations.
 }
 \details{
-A configuration set is fitted to a one or more group networks. See
+A configuration set is fitted to one or more group networks. See
 \code{\link{fit_group_network}} for details.
 
-\code{set_configuration_ids} creates a \code{configuration_set} and updates the included
-configurations' ids.
+\code{set_configuration_ids} creates a \code{configuration_set} and sets the
+configurations' IDs.
+}
+\examples{
+f_set <- star(2:5)
+get_attribute(f_set, "id")
+f_set <- set_configuration_ids(f_set, LETTERS[1:4])
+get_attribute(f_set, "id")
 }
 \seealso{
 \code{\link{fit_group_network}}, \code{\link{configuration}}

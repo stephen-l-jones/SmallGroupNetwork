@@ -14,71 +14,91 @@ configuration(x, ...)
 \method{configuration}{default}(
   x,
   group_size,
+  weights,
   type = c("binary", "weighted"),
   loops = FALSE,
-  matrix_type = c("unspecified", "edgelist", "adjacency"),
-  weights,
   description,
   id,
   ...
 )
 
-\method{configuration}{igraph}(x, attrname, ...)
+\method{configuration}{igraph}(
+  x,
+  attrname,
+  type = c("binary", "weighted"),
+  loops = FALSE,
+  description,
+  id,
+  ...
+)
 
-\method{configuration}{network}(x, attrname, ...)
+\method{configuration}{network}(
+  x,
+  attrname,
+  type = c("binary", "weighted"),
+  loops = FALSE,
+  description,
+  id,
+  ...
+)
 
-as.configuration(x, ...)
+as.configuration(x)
 
-is.configuration(x, ...)
+is.configuration(x)
 }
 \arguments{
-\item{x}{A square adjacency matrix, two-column edge list, \code{igraph} object, or \code{network} object.}
+\item{x}{A square adjacency matrix, two-column edge list, \code{igraph} object, or
+\code{network} object.}
 
-\item{group_size}{Positive integer for the size of the group.}
+\item{group_size}{Size of the group.}
 
-\item{type}{Configuration type of either \code{"binary"} or \code{"weighted"}. Binary configuration values
-are 0, 1, or \code{NA}. Weighted configuration values are numeric or \code{NA}.}
+\item{weights}{Numeric vector of edge weights for an edge list. Length should equal the number
+of rows in \code{x}.}
 
-\item{matrix_type}{Used to identify \code{x}. Can be \code{"unspecified"}, \code{"edgelist"}, or \code{"adjacency"}.
-If unspecified, the function will guess whether \code{x} is an edge list or adjacency matrix.}
-
-\item{weights}{Numeric vector of edge weights for an edge list. Length should equal the number of rows in
-\code{x}.}
+\item{type}{Configuration type of either \code{"binary"} or \code{"weighted"}. Binary
+configuration values are \code{0}, \code{1}, or \code{NA}. Weighted configuration
+values are numeric or \code{NA}.}
 
 \item{description}{Description or label for the configuration.}
 
 \item{id}{A unique identifier for the configuration.}
 
 \item{attrname}{Attribute name that holds the edge weights (usually \code{"weight"}).}
+
+\item{input_type}{Used to identify \code{x}. Can be \code{"unspecified"}, \code{"edgelist"}, or
+\code{"adjacency"}. If unspecified, the function will guess whether \code{x} is
+an edge list or adjacency matrix.}
 }
 \value{
-A group \code{configuration}.
+A \code{configuration}.
 }
 \description{
-\code{configuration} creates a group configuration.
+\code{configuration} creates a configuration, which is a square adjacency matrix
+with attributes that define its characteristics.
 }
 \details{
-A configuration is represented as a binary or weighted \emph{n}-by-\emph{n} adjacency
-matrix for a group of size \emph{n}. Configurations within a \code{configuration_set}
-are fitted to a one or more group networks of the same size and type.
-See \code{\link{fit_group_network}} for details.
+A configuration is represented as a binary or weighted \emph{n}-by-\emph{n}
+adjacency matrix for a group of size \emph{n}. Configurations within a \code{
+configuration_set} are fitted to group networks of the same size and type.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{default}: Create a group \code{configuration} from an adjacency matrix or edge
-list.
+\item \code{default}: Create a \code{configuration} from an adjacency
+matrix or edge list.
 
-\item \code{igraph}: Create a group \code{configuration} from an \code{igraph} object.
+\item \code{igraph}: Create a \code{configuration} from an \code{igraph}
+object.
 
-\item \code{network}: Create a group \code{configuration}  from a \code{network} object.
+\item \code{network}: Create a \code{configuration} from a \code{network}
+object.
 }}
 
 \examples{
-adj = matrix(0, 5, 5)
-adj[1, 2] = 1
-adj[2, 1] = 2
+adj <- matrix(0, 5, 5)
+adj[1, 2] <- 1
+adj[2, 1] <- 2
 configuration(adj, type = "weighted")
-el = cbind(c(1,1,1),c(2,3,4))
+el <- cbind(c(1,1,1),c(2,3,4))
 configuration(el, group_size = 6)
 }
 \seealso{

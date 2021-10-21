@@ -55,7 +55,7 @@
 #' dimensions (\mjeqn{N_g \times N_g}{\emph{N_g x N_g}}) as \mjeqn{x_g}{\emph{x_g}} 
 #' are fit using \code{fit_group_network}, which returns the the best-fitting 
 #' configuration \mjeqn{f^\ast}{\emph{f*}}. The \code{fit} matrix in the returned 
-#' \code{\link{configuration_fit}} object gives the reordered rows and columns of 
+#' \code{configuration_fit} object gives the reordered rows and columns of 
 #' configuration \mjeqn{f^\ast}{\emph{f*}} that maximizes the score.
 #' 
 #' \strong{Weighted configurations.} 

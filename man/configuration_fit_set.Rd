@@ -2,28 +2,21 @@
 % Please edit documentation in R/configuration_fit_set.R
 \name{configuration_fit_set}
 \alias{configuration_fit_set}
-\alias{as.configuration_fit_set}
+\alias{is.configuration_fit_set}
 \title{Configuration fit set}
 \usage{
 configuration_fit_set(...)
 
-as.configuration_fit_set(x, ...)
-}
-\arguments{
-\item{...}{\code{configuration_fit} objects or \code{configuration_fit_set} objects
-(see \code{\link{configuration_fit}}).}
+is.configuration_fit_set(x)
 }
 \value{
 A \code{configuration_fit_set}.
 }
 \description{
-\code{configuration_fit_set} creates a \code{configuration_fit_set} object, which is
-a list of configuration fits that best fit a group network.
-}
-\details{
-A \code{configuration_fit_set} is returned for each group network using the
-\code{\link{fit_group_network}} function.
+\code{configuration_fit_set} is a list of \code{configuration_fit} objects
+returned by the \code{fit_configuration_set} function when \code{
+ties.method = "all"}.
 }
 \seealso{
-\code{\link{fit_group_network}}, \code{\link{configuration_fit}}
+\code{\link{fit_configuration_set}}, \code{\link{configuration_fit}}
 }

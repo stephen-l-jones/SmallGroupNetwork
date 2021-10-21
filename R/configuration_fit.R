@@ -1,5 +1,7 @@
-make_configuration_fit <- function (x, fit, configuration_id, score, potential, 
-                                    lp_structure, ROI_obj, duration, solver) {
+make_configuration_fit <- function (
+  x, fit, configuration_id, score, potential,
+  lp_structure, ROI_obj, duration, solver
+) {
   configuration_fit <- list(
     x                = x,
     fit              = fit,
@@ -10,7 +12,7 @@ make_configuration_fit <- function (x, fit, configuration_id, score, potential,
     ROI_obj          = ROI_obj
   )
   structure(
-    configuration_fit, 
+    configuration_fit,
     class            = "configuration_fit",
     duration         = duration,
     solver           = solver
@@ -18,11 +20,11 @@ make_configuration_fit <- function (x, fit, configuration_id, score, potential,
 }
 
 #' Configuration fit
-#' 
-#' \code{configuration_fit} object.
-#' 
+#'
+#' Returns whether an object is a \code{configuration_fit} object.
+#'
 #' @param x
-#' A potential \code{configuration_fit} object.
+#' An object.
 #' @return
 #' \code{TRUE} if a \code{configuration_fit} object; \code{FALSE} otherwise.
 #' @seealso \code{\link{fit_group_network}}
@@ -37,20 +39,18 @@ is.configuration_fit <- function(x) {
 }
 
 #' @export
-print.configuration_fit = function(x, ...) {
+print.configuration_fit <- function (x, ...) {
   fit_name <- attr(x$fit, "description")
-  group_id <- attr(x$x, "group_id")
   x        <- strip_attr(x)
   x$fit    <- strip_attr(x$fit)
-  
-  cat("Group: ", group_id, "\n", sep = "")
+
   cat("Fit: ", fit_name, "\n", sep = "")
   print.default(x$fit, na.print = "-", ...)
   cat("Score: ", format(x$score, digits = 5), "\n", sep = "")
 }
 
 #' @export
-summary.configuration_fit = function(x, ...) {
+summary.configuration_fit <- function (x, ...) {
   s <- list(
     group_name = attr(x$x, "group_name"),
     descr      = attr(x$fit, "description"),
@@ -63,17 +63,21 @@ summary.configuration_fit = function(x, ...) {
     solver     = attr(x, "solver")
   )
   class(s) <- "configuration_fit_summary"
-  s
+  return(s)
 }
 
 #' @export
-print.configuration_fit_summary = function(x, ...) {
-  cat("Group name   : ", 
-      ifelse(x$group_name == "", "<no name>", x$group_name), 
-      "\n", sep = "")
-  cat("Configuration: ", 
-      ifelse(x$descr == "", "<no description>", x$descr), 
-      "\n", sep = "")
+print.configuration_fit_summary <- function (x, ...) {
+  cat(
+    "Group name   : ",
+    ifelse(x$group_name == "", "<no name>", x$group_name),
+    "\n", sep = ""
+  )
+  cat(
+    "Configuration: ",
+    ifelse(x$descr == "", "<no description>", x$descr),
+    "\n", sep = ""
+  )
   cat("ID           : ", x$id, "\n", sep = "")
   cat("Group size   : ", x$size, "\n", sep = "")
   cat("Type         : ", x$type, "\n", sep = "")
@@ -84,13 +88,14 @@ print.configuration_fit_summary = function(x, ...) {
 }
 
 #' @export
-print.group_network = function(x, ...) {
+print.group_network <- function (x, ...) {
   group_id <- attr(x, "group_id")
   attrs    <- names(attributes(x))
   attrs    <- attrs[!(attrs %in% c("dim","dimnames"))]
-  for (i in seq_along(attrs)) 
+  for (i in seq_along(attrs)) {
     attr(x, attrs[i]) <- NULL
-  
+  }
+
   cat("Group: ", group_id, "\n", sep = "")
   print.default(x, ...)
 }

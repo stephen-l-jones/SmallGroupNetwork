@@ -53,10 +53,10 @@ is arbitrary. Thus, the function determines the ordering of rows and columns in
 
 All binary configurations in set \mjeqn{F}{\emph{F}} that have the same
 dimensions (\mjeqn{N_g \times N_g}{\emph{N_g x N_g}}) as \mjeqn{x_g}{\emph{x_g}}
-are simultaneously fit, and the function returns the \code{id} of \mjeqn{F}{
-\emph{F}} for the best-fitting configuration \mjeqn{f^\ast}{\emph{f*}}. The
-\code{fit} matrix in the returned \code{configuration_fit} object gives the
-reordered rows and columns of configuration \mjeqn{f^\ast}{\emph{f*}}.
+are fit using \code{fit_group_network}, which returns the the best-fitting
+configuration \mjeqn{f^\ast}{\emph{f*}}. The \code{fit} matrix in the returned
+\code{configuration_fit} object gives the reordered rows and columns of
+configuration \mjeqn{f^\ast}{\emph{f*}} that maximizes the score.
 
 \strong{Weighted configurations.}
 When fitting weighted configurations, a group network's values
@@ -73,7 +73,6 @@ and \mjeqn{d_{ij} = 0}{\emph{d_ij} = 0} when \mjeqn{f_{ij}}{\emph{f_ij}} is
 \code{NA}; otherwise, \mjeqn{d_{ij} = 1}{\emph{d_ij} = 1}. All weighted
 configurations in set \mjeqn{F}{\emph{F}} that have the same dimensions
 (\mjeqn{N_g \times N_g}{\emph{N_g x N_g}}) as \mjeqn{x_g}{\emph{x_g}} are
-simultaneously fit, and the function returns the \code{id} of \mjeqn{F}{\emph{F}}
-for the weighted configuration \mjeqn{f^\ast}{\emph{f*}} that minimizes the
-score.
+fit, and the function returns the reordered weighted configuration
+\mjeqn{f^\ast}{\emph{f*}} that minimizes the score.
 }

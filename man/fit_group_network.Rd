@@ -15,7 +15,7 @@ fit_group_network(x, configuration_set, ...)
   group_index,
   weights,
   group_sizes,
-  type = c("unspecified", "edgelist", "adjacency"),
+  input_type = c("unspecified", "edgelist", "adjacency"),
   ties.method = c("all", "first", "last", "random"),
   parallel = FALSE,
   cores = NULL,
@@ -58,7 +58,7 @@ should equal the number of rows in \code{x}.}
 
 \item{group_sizes}{Vector of group sizes. Length should equal the number of groups.}
 
-\item{type}{Used to specify \code{x}. Can be \code{"unspecified"}, \code{"edgelist"}, or \code{"adjacency"}.
+\item{input_type}{Used to specify \code{x}. Can be \code{"unspecified"}, \code{"edgelist"}, or \code{"adjacency"}.
 If unspecified, the function will guess whether \code{x} is an edge list or adjacency matrix.}
 
 \item{ties.method}{When \code{ties.method = "all"}, the function will return a \code{configuration_fit_set} object

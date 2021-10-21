@@ -104,7 +104,7 @@ fit_group_network = function(x, configuration_set, ...) {
 #' \code{x}.
 #' @param group_sizes
 #' Vector of group sizes. Length should equal the number of groups.
-#' @param type
+#' @param input_type
 #' Used to specify \code{x}. Can be \code{"unspecified"}, \code{"edgelist"}, or \code{"adjacency"}. 
 #' If unspecified, the function will guess whether \code{x} is an edge list or adjacency matrix.
 #' @param ties.method
@@ -136,23 +136,23 @@ fit_group_network = function(x, configuration_set, ...) {
 #' fit_group_network(x, f_list)
 #' @export
 fit_group_network.default = function(x, configuration_set, group_index, weights, group_sizes,
-                                     type = c("unspecified","edgelist","adjacency"),
+                                     input_type = c("unspecified","edgelist","adjacency"),
                                      ties.method = c("all","first","last","random"),
                                      parallel = FALSE, cores = NULL, ...) {
-  type = match.arg(type)
+  input_type = match.arg(input_type)
   ties.method = match.arg(ties.method)
   if (is.array(x) && length(dim(x)) == 3) {
     x = asplit(x, 3)
   }
-  if (type == "unspecified") {
+  if (input_type == "unspecified") {
     if (is.list(x)) {
-      type = which_matrix_type(x[[1]])
+      input_type = which_input_type(x[[1]])
     } else {
-      type = which_matrix_type(x)
+      input_type = which_input_type(x)
     }
   }
   
-  if (type == "edgelist") {
+  if (input_type == "edgelist") {
     if (!is.list(x) | is.data.frame(x)) {
       x = as.data.frame(x)
       if (dim(x)[2] != 2)
@@ -197,7 +197,7 @@ fit_group_network.default = function(x, configuration_set, group_index, weights,
     g_ndx      = seq_len(group_size)
     id         = ifelse(!is.na(v[g_ndx]), v[g_ndx], g_ndx)
     m          = matrix(0L, group_size, group_size, dimnames = list(id, id))
-    if (type == "edgelist") {
+    if (input_type == "edgelist") {
       m[as.matrix(d[, 1:2])] = d[, 3]
     } else {
       m[seq_along(v), seq_along(v)] = d

@@ -1,8 +1,7 @@
-
-constraint_aggregator = function() {
-  row_ptr   = 0
-  row_ndx   = 1
-  constr = list(
+constraint_aggregator <- function () {
+  row_ptr <- 0
+  row_ndx <- 1
+  constr <- list(
     row = vector("integer"),
     col = vector("integer"),
     val = vector("integer"),
@@ -10,7 +9,7 @@ constraint_aggregator = function() {
     rhs = vector("integer")    
   )
   
-  add_constraint = function(coef, indices, dir, rhs) {
+  add_constraint <- function (coef, indices, dir, rhs) {
     if (length(coef) != length(indices))
       stop("coef must has the same length as indices.")
     len = length(coef)
@@ -23,7 +22,7 @@ constraint_aggregator = function() {
     row_ptr   <<- row_ptr + len
   }
   
-  get_constraints = function() {
+  get_constraints <- function () {
     list(
       sparse_lhs = slam::simple_triplet_matrix(
         unlist(constr$row), 
@@ -35,7 +34,7 @@ constraint_aggregator = function() {
     )
   }
   
-  get_sparse_lhs = function() {
+  get_sparse_lhs <- function () {
     slam::simple_triplet_matrix(
       unlist(constr$row), 
       unlist(constr$col),
@@ -43,15 +42,15 @@ constraint_aggregator = function() {
     )
   }
   
-  get_dir = function() {
+  get_dir <- function () {
     unlist(constr$dir)
   }
   
-  get_rhs = function() {
+  get_rhs <- function () {
     unlist(constr$rhs)
   }
   
-  get_row_col_val = function() {
+  get_row_col_val <- function () {
     cbind(
       unlist(constr$row), 
       unlist(constr$col),
@@ -59,16 +58,15 @@ constraint_aggregator = function() {
     )
   }
   
-  x = list(
+  x <- list(
     add_constraint  = add_constraint,
     get_constraints = get_constraints,
     get_sparse_lhs  = get_sparse_lhs,
-    get_dir = get_dir,
-    get_rhs = get_rhs,
+    get_dir         = get_dir,
+    get_rhs         = get_rhs,
     get_row_col_val = get_row_col_val
   )
   
-  class(x) = "constraint_aggregator"
-  
+  class(x) <- "constraint_aggregator"
   return(x)
 }
