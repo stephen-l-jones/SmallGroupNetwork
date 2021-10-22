@@ -11,8 +11,8 @@ add_component(component, configuration = NULL, group_size = NULL, ...)
 converted to a \code{configuration} or \code{configuration_set}.}
 
 \item{configuration}{A \code{configuration} or other object that can be converted to a \code{
-configuration}. If \code{NULL}, a configuration is built using the component(s)
-in the \code{component} parameter.}
+configuration}. If \code{NULL}, a configuration is built using the provideed
+component(s).}
 
 \item{group_size}{The size for the returned configuration. Ignored if a configuration is given.}
 }
@@ -25,8 +25,8 @@ A \code{configuration} object.
 \details{
 A component is the full subset of connected vertices (or nodes) in a network
 which is unconnected to other subsets. If a \code{configuration} is provided,
-components are added as block diagonals to available space in the
-configuration (i.e.,  0-value blocks). If no \code{configuration} nor \code{
+components are added as block diagonals to available space (i.e., 0-value blocks)
+in the configuration. If no \code{configuration} nor \code{
 group_size} are given, the components are combined block-diagonally into one
 configuration.
 }

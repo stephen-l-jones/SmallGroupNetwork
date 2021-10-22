@@ -1,12 +1,7 @@
-#' Configuration fit set
-#' 
-#' \code{configuration_fit_set} is a list of \code{configuration_fit} objects 
-#' returned by the \code{fit_configuration_set} function when \code{
-#' ties.method = "all"}.
-#' 
-#' @return
-#' A \code{configuration_fit_set}.
-#' @seealso \code{\link{fit_configuration_set}}, \code{\link{configuration_fit}}
+#' @rdname configuration_fit
+#' @name configuration_fit_set
+NULL
+
 configuration_fit_set <- function (...) {
   x <- list(...)
   as.configuration_fit_set.list(x)
@@ -52,7 +47,7 @@ as.configuration_fit_set.default <- function (x, ...) {
   return(x)
 }
 
-#' @rdname configuration_fit_set
+#' @rdname configuration_fit
 #' @export
 is.configuration_fit_set <- function (x) {
   if (!is.list(x)) 

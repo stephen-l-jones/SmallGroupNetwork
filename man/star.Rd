@@ -12,7 +12,8 @@ star(
   group_size = max(n),
   mode = c("mutual", "in", "out"),
   loops = FALSE,
-  value = 1L
+  value = 1L,
+  type = ifelse(value \%in\% c(0:1, NA), "binary", "weighted")
 )
 
 ring(
@@ -20,7 +21,8 @@ ring(
   group_size = max(n),
   mode = c("mutual", "in", "out"),
   loops = FALSE,
-  value = 1L
+  value = 1L,
+  type = ifelse(value \%in\% c(0:1, NA), "binary", "weighted")
 )
 
 subgroup(
@@ -29,7 +31,8 @@ subgroup(
   mode = c("mutual", "in", "out"),
   relation = c("within", "between"),
   loops = FALSE,
-  value = 1L
+  value = 1L,
+  type = ifelse(value \%in\% c(0:1, NA), "binary", "weighted")
 )
 
 subgroup_all(
@@ -39,7 +42,8 @@ subgroup_all(
   mode = c("mutual", "in", "out"),
   relation = c("within", "between"),
   loops = FALSE,
-  value = 1L
+  value = 1L,
+  type = ifelse(value \%in\% c(0:1, NA), "binary", "weighted")
 )
 }
 \arguments{
@@ -48,8 +52,8 @@ subgroup_all(
 \item{group_size}{Size of the group.}
 
 \item{mode}{Can be \code{"mutual"}, \code{"in"}, or \code{"out"}: for edge \emph{(i, j)} and
-matrix \emph{M}, \code{"out"} creates edge \emph{M\link{i, j}}, \code{"in"} creates
-edge \emph{M\link{j, i}}, and \code{"mutual"} creates both.}
+matrix \emph{M}, \code{"out"} creates edge \emph{M(i, j)}, \code{"in"} creates
+edge \emph{M(j, i)}, and \code{"mutual"} creates both.}
 
 \item{loops}{When \code{FALSE}, diagonal values are set to \code{NA}.}
 
@@ -76,8 +80,7 @@ connected.
 \code{subgroup} creates one or more configurations in which vertices are
 connected within or between subgroups.
 
-\code{subgroup_all} creates all possible subgroup configurations for \code{n}
-vertices.
+\code{subgroup_all} creates all possible subgroup configurations for n vertices.
 }
 \examples{
 star(4)

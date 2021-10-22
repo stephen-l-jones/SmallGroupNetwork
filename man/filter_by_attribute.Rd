@@ -35,5 +35,6 @@ filter_by_attribute(f_set, list(group_size = 2:3))
 f_set[filter_by_attribute(f_set, list(group_size = 2:3), as.boolean = TRUE)]
 }
 \seealso{
-\code{\link{get_attribute}}
+\code{\link{get_attribute}}, \code{\link{configuration_set}},
+\code{\link{configuration_fit_set}}
 }

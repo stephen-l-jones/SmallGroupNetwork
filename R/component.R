@@ -7,8 +7,8 @@
 #' converted to a \code{configuration} or \code{configuration_set}.
 #' @param configuration
 #' A \code{configuration} or other object that can be converted to a \code{
-#' configuration}. If \code{NULL}, a configuration is built using the component(s)
-#' in the \code{component} parameter.
+#' configuration}. If \code{NULL}, a configuration is built using the provideed
+#' component(s).
 #' @param group_size
 #' The size for the returned configuration. Ignored if a configuration is given.
 #' @return
@@ -16,8 +16,8 @@
 #' @details
 #' A component is the full subset of connected vertices (or nodes) in a network 
 #' which is unconnected to other subsets. If a \code{configuration} is provided, 
-#' components are added as block diagonals to available space in the 
-#' configuration (i.e.,  0-value blocks). If no \code{configuration} nor \code{
+#' components are added as block diagonals to available space (i.e., 0-value blocks)
+#' in the configuration. If no \code{configuration} nor \code{
 #' group_size} are given, the components are combined block-diagonally into one 
 #' configuration.
 #' @seealso \code{\link{configuration}}, \code{\link{configuration_set}}
@@ -43,11 +43,9 @@ add_component <- function (
       g <- group_size
     }
     f <- configuration(
-      0L, 
       group_size = g, 
       type       = get_attribute(component[[1]], "type"),
       loops      = get_attribute(component[[1]], "loops"),
-      input_type = "adjacency", 
       ...
     )
   } else {
@@ -57,7 +55,8 @@ add_component <- function (
   if (length(unique(get_attribute(c(component, list(f)), "type"))) > 1)
     stop("All components and the configuration must be of the same type")
   if (length(unique(get_attribute(c(component, list(f)), "loops"))) > 1)
-    stop("The loops attribute must be the same for all components and the configuration")
+    stop("The loops attribute must be the same for all components and the 
+         configuration")
   sf <- space_finder(f)
   sapply(component, function(m) {
     if (sf$has_space(m)) {

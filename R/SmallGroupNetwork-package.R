@@ -2,7 +2,7 @@
 #'
 #' \loadmathjax 
 #' Fit configurations to a small group network to determine the best-fitting 
-#' configuration.
+#' configuration(s).
 #' 
 #' @docType package
 #' @import Rcpp mathjaxr
@@ -13,24 +13,13 @@
 #' Configurations are network structures of theoretical interest. They are fitted
 #' to an empirical small group network to see which \code{\link{configuration}}
 #' within a \code{\link{configuration_set}} best approximates the group network. The 
-#' function \code{\link{fit_group_network}} determines the best-fitting 
+#' function \code{\link{fit_configuration_set}} determines the best-fitting 
 #' configuration. Configurations and group networks are represented as square 
 #' adjacency matrices. They can be binary or weighted, directed or undirected, and
 #' can include or exclude loops (i.e., self-references). A configuration must have 
 #' the same dimensions as a group network to be fitted to it. 
 #' 
-#' Fitting is done using a naive algorithm or using a linear program (LP) through 
-#' the \code{ROI} package. \code{\link{ROI}} allows for different LP solvers to be 
-#' used. The default LP solver is "glpk" using the \code{Rglpk} package. Other
-#' solvers may be used by passing the solver name and any solver parameters 
-#' through \code{...} to the \code{\link{ROI_solve}} function (e.g., \code{solver = 
-#' "lpsolve"}). When using other solvers with parallel processing, also pass the 
-#' solver package name and the associated \code{ROI.plugin.*} package name through 
-#' \code{...} using a "packages" parameter (e.g., \code{packages = c("lpSolve",
-#' "ROI.plugin.lpsolve")}). The naive algorithm is written in C++ to improve
-#' performance and often is faster than LP solvers. 
-#' 
-#' \strong{Binary configurations.}
+#' ## Binary configurations
 #' When fitting binary configurations, a group network's negative values indicate 
 #' the absence of an edge (i.e., tie) and positive values indicate the presence of 
 #' an edge. More negative (or positive) values in the group network give stronger 
@@ -58,7 +47,7 @@
 #' \code{configuration_fit} object gives the reordered rows and columns of 
 #' configuration \mjeqn{f^\ast}{\emph{f*}} that maximizes the score.
 #' 
-#' \strong{Weighted configurations.} 
+#' ## Weighted configurations 
 #' When fitting weighted configurations, a group network's values 
 #' indicate a level of the measured relationship. A configurations \emph{n}-valued 
 #' elements are matched to a network's edges with the closest values to \emph{n}.

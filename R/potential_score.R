@@ -1,4 +1,4 @@
-potential_score <- function(w, f_solve) {
+potential_score <- function (w, f_solve) {
   dim_f   <- dim(f_solve)
   include <- ifelse(
     test = rep(attr(f_solve, "loops"), prod(dim_f)), 

@@ -1,4 +1,3 @@
-#' @export
 adjacency_matrix_set <- function (x, ...) {
   UseMethod("adjacency_matrix_set", x)
 }
@@ -22,7 +21,7 @@ adjacency_matrix_set.list <- function (x, group_size, weights, ...) {
   }
   if (!missing(weights) && !is.null(weights)) {
     if (!("list" %in% class(weights))) {
-      weights <- as.list(weights)
+      weights <- list(weights)
     }
     if (length(x) != length(weights))
       stop("List length of weights must match list length of x.")
@@ -42,9 +41,6 @@ adjacency_matrix_set.list <- function (x, group_size, weights, ...) {
   return(m_list)
 }
 
-
-
-#' @export
 adjacency_matrix_set_from_edgelist <- function (
   el, group_index, group_size, weights, ...
 ) {

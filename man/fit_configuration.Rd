@@ -3,8 +3,15 @@
 \name{fit_configuration}
 \alias{fit_configuration}
 \alias{fit_configuration.default}
+\alias{fit_configuration.list}
+\alias{fit_configuration.igraph}
+\alias{fit_configuration.network}
+\alias{fit_configuration_set}
 \alias{fit_configuration_set.default}
-\title{Fit configuration to group network}
+\alias{fit_configuration_set.list}
+\alias{fit_configuration_set.igraph}
+\alias{fit_configuration_set.network}
+\title{Fit configuration or configuration set to group networks}
 \usage{
 fit_configuration(x, configuration, ...)
 
@@ -18,6 +25,14 @@ fit_configuration(x, configuration, ...)
   ...
 )
 
+\method{fit_configuration}{list}(x, configuration, group_size, weights, parallel = FALSE, ...)
+
+\method{fit_configuration}{igraph}(x, configuration, attrname, ...)
+
+\method{fit_configuration}{network}(x, configuration, attrname, ...)
+
+fit_configuration_set(x, configuration_set, ...)
+
 \method{fit_configuration_set}{default}(
   x,
   configuration_set,
@@ -28,54 +43,159 @@ fit_configuration(x, configuration, ...)
   parallel = FALSE,
   ...
 )
+
+\method{fit_configuration_set}{list}(
+  x,
+  configuration_set,
+  ties.method = c("all", "first", "last", "random"),
+  group_size,
+  weights,
+  parallel = FALSE,
+  ...
+)
+
+\method{fit_configuration_set}{igraph}(
+  x,
+  configuration_set,
+  ties.method = c("all", "first", "last", "random"),
+  attrname,
+  ...
+)
+
+\method{fit_configuration_set}{network}(
+  x,
+  configuration_set,
+  ties.method = c("all", "first", "last", "random"),
+  attrname,
+  ...
+)
 }
 \arguments{
 \item{x}{A group network or list of group networks. A group network can be an adjacency
 matrix, edge list, \code{igraph} object, or \code{network} object. \code{x} may
 also be an edge list for multiple groups when \code{group_index} is provided.}
 
-\item{configuration}{A \code{configuration} object.}
+\item{configuration}{A \code{\link{configuration}} object.}
 
-\item{weights}{Numeric vector of edge weights for an edge list. Length should equal the number
-of rows in \code{x}.}
+\item{group_index}{Vector of unique identifiers for each group network in \code{x} when \code{x} is
+an edge list. The length of \code{group_index} should match the number of rows
+in \code{x}. Providing a group index indicates to the function that \code{x} is
+an edge list. If x is a list, \code{group_index} should also be a list of
+the same length, with each element corresponding to the elements in \code{x}.}
 
-\item{input_type}{Used to specify \code{x}. Can be \code{"unspecified"}, \code{"edgelist"}, or
-\code{"adjacency"}. If unspecified, the function will guess whether \code{x} is
-an edge list or adjacency matrix.}
+\item{group_size}{Numeric vector of group size(s) when \code{x} is an edge list. \code{group_size}
+must match the group size of \code{configuration}. Length of \code{group_size}
+should equal the number of rows in \code{x}. (Group size is repeated
+for all edge list rows in a group.) If \code{x} is a list of edge lists, \code{
+group_size} should also be a list of the same length.}
+
+\item{weights}{Numeric vector of edge weights when \code{x} is an edge list. Length should equal
+the number of rows in \code{x}. If x is a list, \code{weights} should also be a
+list of the same length, with each element corresponding to the elements in
+\code{x}.}
+
+\item{parallel}{Use parallel processing. Parallel processing can only be used when multiple group
+networks are being fit. To explicitly set the number of cores used, pass the
+number through \code{...} using a \code{"cores"} parameter (e.g., \code{
+cores = 4}).}
+
+\item{attrname}{Attribute name that holds the edge weights (usually \code{"weight"}).}
+
+\item{configuration_set}{A \code{\link{configuration_set}} object.}
+
+\item{ties.method}{When \code{ties.method = "all"}, the function will return a \code{
+configuration_fit_set} object for a given group network. When \code{ties.method}
+is \code{"first"}, \code{"last"}, or \code{"random"}, the function will return
+the first, last, or a random \code{configuration_fit} from a set.}
 }
 \value{
-A \code{configuration_fit} object.
+\code{fit_configuration} returns a \code{\link{configuration_fit}} object.
+
+For a given group network, the \code{fit_configuration_set} returns a \code{
+\link{configuration_fit_set}} object with all configurations that best fit the
+group network when \code{ties.method = "all"}. Otherwise it returns a \code{
+configuration_fit} object.
 }
 \description{
-\code{fit_configuration} fits a configuration to group networks and returns
-a \code{configuration_fit} object.
+\code{fit_configuration} fits a configuration to one or more group networks.
+
+\code{fit_configuration_set} selects configurations from a set that
+best fit the given group networks.
 }
 \details{
-\code{fit_configuration} fits a single configuration. To fit multiple
-configurations to group networks, see \code{\link{fit_configuration_set}}.
+\code{fit_configuration} fits a single configuration to one or more group
+networks. All group networks must be the same size as the configuration.
+
+For \code{fit_configuration_set}, group networks can be different sizes. The
+function will only fit configurations in the set that are the same size as a
+group network.
+
+Fitting is done using a naive algorithm or using a linear program (LP) through
+the \code{ROI} package. The naive algorithm is written in C++ to improve
+performance and often is faster than LP solvers. To use an LP solver, pass the
+solver name and any solver parameters through \code{...} to the \code{
+\link{ROI_solve}} function (e.g., \code{solver = "glpk"}). When parallel
+processing, also pass the solver package name and the associated \code{
+ROI.plugin.*} package name through \code{...} using a \code{"packages"}
+parameter (e.g., \code{packages = c("Rglpk","ROI.plugin.glpk")}).
+
+See \code{\link{SmallGroupNetwork}} for details of how configurations are fit
+to group networks.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{default}: Fit configuration to group networks from adjacency
-matrix or edge list
+\item \code{default}: Fit configuration to group network(s) from
+adjacency matrix or edge list
 
-\item \code{default}: Fit configuration to group networks from adjacency
-matrix or edge list
+\item \code{list}: Fit configuration to group networks from list of
+networks
+
+\item \code{igraph}: Fit configuration to group network from
+\code{network} object
+
+\item \code{network}: Fit configuration to group network from
+\code{network} object
+
+\item \code{default}: Fit configuration set to group network(s) from
+adjacency matrix or edge list
+
+\item \code{list}: Fit configuration set to group networks from list
+of networks
+
+\item \code{igraph}: Fit configuration set to group network from
+\code{igraph} object
+
+\item \code{network}: Fit configuration set to group network from
+\code{network} object
 }}
 
 \examples{
+
 f <- star(4)[[1]]
 set.seed(102)
-x = list(
+x <- matrix(rnorm(16), 4)
+fit_configuration(x, f)
+
+f <- add_component(c(star(3, value = 2L),star(3))) 
+el <- cbind(c(1,1,2,3), c(2,3,3,4))
+w <- runif(4, 0, 3)
+fit_configuration(el, f, group_size = 6, weights = w)
+
+f_set <- c(
+  star(4),
+  subgroup_all(4, relation = "between"),
+  subgroup(4),
+  star(4:5),
+  subgroup_all(4:5, relation = "between"),
+  subgroup(4:5)
+)
+set.seed(102)
+x <- list(
   matrix(rnorm(16), 4),
   matrix(rnorm(25), 5)
 )
-fit_group_network(x, f_list)
-f <- star(4)[[1]]
-set.seed(102)
-x = list(
-  matrix(rnorm(16), 4),
-  matrix(rnorm(25), 5)
-)
-fit_group_network(x, f_set)
+fit_group_network(x, f_sets)
+}
+\seealso{
+\code{\link{configuration}}, \code{\link{configuration_set}}
 }

@@ -10,8 +10,8 @@
 #' Size of the group.
 #' @param mode
 #' Can be \code{"mutual"}, \code{"in"}, or \code{"out"}: for edge \emph{(i, j)} and 
-#' matrix \emph{M}, \code{"out"} creates edge \emph{M[i, j]}, \code{"in"} creates 
-#' edge \emph{M[j, i]}, and \code{"mutual"} creates both.
+#' matrix \emph{M}, \code{"out"} creates edge \emph{M(i, j)}, \code{"in"} creates 
+#' edge \emph{M(j, i)}, and \code{"mutual"} creates both.
 #' @param loops
 #' When \code{FALSE}, diagonal values are set to \code{NA}.
 #' @param value
@@ -23,7 +23,8 @@
 #' star(2:4, 6)
 #' @export
 star <- function (
-  n, group_size = max(n), mode = c("mutual","in","out"), loops = FALSE, value = 1L
+  n, group_size = max(n), mode = c("mutual","in","out"), loops = FALSE, value = 1L, 
+  type = ifelse(value %in% c(0:1,NA),"binary","weighted")
 ) {
   n          <- as.integer(n)
   group_size <- as.integer(group_size)
@@ -32,6 +33,8 @@ star <- function (
     stop("n cannot be less than 2.")
   if (group_size < max(n)) 
     stop("group_size cannot be less than n.")
+  if (type == "binary" & value != 1)
+    stop("value must be 1 for binary configuration types.")
   
   mlist <- lapply(n, function(x) {
     m <- matrix(0L, group_size, group_size)
@@ -48,7 +51,7 @@ star <- function (
     make_configuration(
       m           = m, 
       description = paste(x, "star"), 
-      type        = ifelse(value == 1, "binary", "weighted"),
+      type        = type,
       loops       = loops,
       id          = 0
     )
@@ -65,7 +68,8 @@ star <- function (
 #' ring(2:4, 6)
 #' @export
 ring <- function (
-  n, group_size = max(n), mode = c("mutual","in","out"), loops = FALSE, value = 1L
+  n, group_size = max(n), mode = c("mutual","in","out"), loops = FALSE, value = 1L,
+  type = ifelse(value %in% c(0:1,NA),"binary","weighted")
 ) {
   n          <- as.integer(n)
   group_size <- as.integer(group_size)
@@ -74,6 +78,8 @@ ring <- function (
     stop("n cannot be less than 2.")
   if (group_size < max(n)) 
     stop("group_size cannot be less than n.")
+  if (type == "binary" & value != 1)
+    stop("value must be 1 for binary configuration types.")
   
   mlist <- lapply(n, function(x) {
     m <- matrix(0L, group_size, group_size)
@@ -90,7 +96,7 @@ ring <- function (
     make_configuration(
       m           = m, 
       description = paste(x, "ring"), 
-      type        = ifelse(value == 1, "binary", "weighted"),
+      type        = type,
       loops       = loops,
       id          = 0
     )
@@ -117,10 +123,13 @@ ring <- function (
 #' @export
 subgroup <- function (
   ..., group_size = NULL, mode = c("mutual","in","out"), 
-  relation = c("within","between"), loops = FALSE, value = 1L
+  relation = c("within","between"), loops = FALSE, value = 1L,
+  type = ifelse(value %in% c(0:1,NA),"binary","weighted")
 ) {
   mode     <- match.arg(mode)
   relation <- match.arg(relation)
+  if (type == "binary" & value != 1)
+    stop("value must be 1 for binary configuration types.")
   
   subg <- expand_int_matrix(...)
   if (ncol(subg) > 1) {
@@ -174,7 +183,7 @@ subgroup <- function (
     make_configuration(
       m           = m, 
       description = paste(paste(sg, collapse = " "), relation),
-      type        = ifelse(value == 1, "binary", "weighted"),
+      type        = type,
       loops       = loops,
       id          = 0
     )
@@ -184,8 +193,7 @@ subgroup <- function (
 
 #' @rdname star
 #' @description  
-#' \code{subgroup_all} creates all possible subgroup configurations for \code{n}  
-#' vertices.
+#' \code{subgroup_all} creates all possible subgroup configurations for n vertices.
 #' @param min_size
 #' Smallest subgroup size allowed. Default is 2.
 #' @examples
@@ -196,17 +204,24 @@ subgroup <- function (
 #' @export
 subgroup_all <- function (
   n, group_size = max(n), min_size = 2, mode = c("mutual","in","out"), 
-  relation = c("within","between"), loops = FALSE, value = 1L
+  relation = c("within","between"), loops = FALSE, value = 1L, 
+  type = ifelse(value %in% c(0:1,NA),"binary","weighted")
 ) {
   n          <- as.integer(n)
   group_size <- as.integer(group_size)
   min_size   <- as.integer(min_size)
   mode       <- match.arg(mode)
   relation   <- match.arg(relation)
-  if (min(n) < 2) stop("n cannot be less than 2.")
-  if (min(n) < min_size) stop("n cannot be less than min_size.")
-  if (min_size < 1) stop("min_size cannot be less than 1.")
-  if (group_size < max(n)) stop("group_size cannot be less than n.")
+  if (min(n) < 2) 
+    stop("n cannot be less than 2.")
+  if (min(n) < min_size) 
+    stop("n cannot be less than min_size.")
+  if (min_size < 1) 
+    stop("min_size cannot be less than 1.")
+  if (group_size < max(n)) 
+    stop("group_size cannot be less than n.")
+  if (type == "binary" & value != 1)
+    stop("value must be 1 for binary configuration types.")
   
   subgroup_recursive <- function(v, n, min_size) {
     if (n < min_size) {

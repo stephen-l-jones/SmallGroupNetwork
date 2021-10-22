@@ -12,7 +12,7 @@ get_attribute(x, attr_name, ...)
 \item{attr_name}{An attribute name.}
 }
 \value{
-The attribute value(s) associated with the attribute name.
+Value(s) associated with the \code{attr_name}.
 }
 \description{
 Returns attributes from a \code{configuration}, \code{configuration_set},

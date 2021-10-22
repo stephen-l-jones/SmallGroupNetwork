@@ -47,32 +47,33 @@ make_configuration <- function (
 #' A square adjacency matrix, two-column edge list, \code{igraph} object, or 
 #' \code{network} object.
 #' @return
-#' A \code{configuration}.
+#' A \code{configuration} object.
 #' @details 
 #' A configuration is represented as a binary or weighted \emph{n}-by-\emph{n} 
-#' adjacency matrix for a group of size \emph{n}. Configurations within a \code{
-#' configuration_set} are fitted to group networks of the same size and type. 
-#' @seealso \code{\link{fit_group_network}}, \code{\link{configuration_set}}
+#' adjacency matrix for a group of size \emph{n}. A configuration is fitted to 
+#' group networks of the same size using \code{fit_configuration}. Multiple
+#' configurations are fit to group networks using \code{fit_configuration_set}. 
+#' @seealso \code{\link{fit_configuration}}, \code{\link{fit_configuration_set}},
+#' \code{\link{configuration_set}}
 #' @export
 configuration <- function (x, ...) {
+  if (missing(x)) {
+    x <- NULL
+  }
   UseMethod("configuration", x)
 }
 
 #' @describeIn configuration Create a \code{configuration} from an adjacency 
 #' matrix or edge list.
 #' @param group_size
-#' Size of the group.
+#' Size of the group. Used only when x is an edge list.
+#' @param weights
+#' Numeric vector of edge weights for an edge list. Length should equal the number 
+#' of rows in \code{x}.
 #' @param type
 #' Configuration type of either \code{"binary"} or \code{"weighted"}. Binary 
 #' configuration values are \code{0}, \code{1}, or \code{NA}. Weighted configuration 
 #' values are numeric or \code{NA}.
-#' @param input_type
-#' Used to identify \code{x}. Can be \code{"unspecified"}, \code{"edgelist"}, or 
-#' \code{"adjacency"}. If unspecified, the function will guess whether \code{x} is 
-#' an edge list or adjacency matrix.
-#' @param weights
-#' Numeric vector of edge weights for an edge list. Length should equal the number 
-#' of rows in \code{x}.
 #' @param description
 #' Description or label for the configuration.
 #' @param id
@@ -87,8 +88,11 @@ configuration <- function (x, ...) {
 #' @export
 configuration.default <- function (
   x, group_size, weights, 
-  type = c("binary","weighted"), loops = FALSE, description, id, ...
+  type = c("binary","weighted"), loops = FALSE, description = "", id = 0, ...
 ) {
+  if (missing(x)) {
+    x <- NULL
+  }
   m <- adjacency_matrix(x, group_size, weights, ...)
   make_configuration(m, type, loops, description, id)
 }
@@ -99,7 +103,8 @@ configuration.default <- function (
 #' Attribute name that holds the edge weights (usually \code{"weight"}).
 #' @export
 configuration.igraph <- function (
-  x, attrname, type = c("binary","weighted"), loops = FALSE, description, id, ...
+  x, attrname, type = c("binary","weighted"), loops = FALSE, 
+  description = "", id = 0, ...
 ) {
   m <- adjacency_matrix(x, attrname, ...)
   make_configuration(m, type, loops, description, id)
@@ -109,7 +114,8 @@ configuration.igraph <- function (
 #' object.
 #' @export
 configuration.network <- function (
-  x, attrname, type = c("binary","weighted"), loops = FALSE, description, id, ...
+  x, attrname, type = c("binary","weighted"), loops = FALSE, 
+  description = "", id = 0, ...
 ) {
   m <- adjacency_matrix(x, attrname, ...)
   make_configuration(m, type, loops, description, id)

@@ -8,7 +8,7 @@
 #' @param attr_name
 #' An attribute name.
 #' @return
-#' The attribute value(s) associated with the attribute name.
+#' Value(s) associated with the \code{attr_name}.
 #' @seealso \code{\link{filter_by_attribute}}
 #' @examples
 #' f_set <- c(star(2), star(3), star(4))
@@ -68,7 +68,8 @@ get_attribute.default <- function (x, attr_name, ...) {
 #' A subset of objects that match the filter criteria or a boolean vector that
 #' can be used to filter a \code{configuration_set} or \code{configuration_fit_set},
 #' depending on the \code{as.boolean} parameter.
-#' @seealso \code{\link{get_attribute}}
+#' @seealso \code{\link{get_attribute}}, \code{\link{configuration_set}},
+#' \code{\link{configuration_fit_set}}
 #' @examples
 #' f_set <- c(star(2), star(3), star(4))
 #' filter_by_attribute(f_set, list(group_size = 2:3))

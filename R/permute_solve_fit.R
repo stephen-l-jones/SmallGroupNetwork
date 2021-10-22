@@ -30,8 +30,8 @@ permute_solve_fit <- function (w, f, ...) {
     fit              = fit,
     score            = score,
     potential        = potential_score(w, f_solve),
-    lp_structure     = NA,
-    ROI_obj          = NA,
+    lp_structure     = NULL,
+    ROI_obj          = NULL,
     duration         = duration,
     solver           = "naive"
   )

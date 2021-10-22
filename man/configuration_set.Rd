@@ -25,15 +25,14 @@ that can be coerced to \code{configuration} objects.}
 \item{ids}{A vector of IDs of the same length as \code{x}.}
 }
 \value{
-A \code{configuration_set}.
+A \code{configuration_set} object.
 }
 \description{
-\code{configuration_set} creates a \code{configuration_set} object, which is
-a list of configurations.
+\code{configuration_set} creates a a list of \code{configuration} objects.
 }
 \details{
 A configuration set is fitted to one or more group networks. See
-\code{\link{fit_group_network}} for details.
+\code{\link{fit_configuration_set}} for details.
 
 \code{set_configuration_ids} creates a \code{configuration_set} and sets the
 configurations' IDs.
@@ -45,5 +44,5 @@ f_set <- set_configuration_ids(f_set, LETTERS[1:4])
 get_attribute(f_set, "id")
 }
 \seealso{
-\code{\link{fit_group_network}}, \code{\link{configuration}}
+\code{\link{fit_configuration_set}}, \code{\link{configuration}}
 }

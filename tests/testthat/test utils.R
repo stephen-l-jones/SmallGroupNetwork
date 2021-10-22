@@ -27,16 +27,3 @@ test_that("mbind", {
   expect_equal(dim(SmallGroupNetwork:::mbind(integer(0))), c(0,1,1))
 })
 
-test_that("which_matrix_type", {
-  expect_equal(SmallGroupNetwork:::which_matrix_type(1), "adjacency")
-  expect_equal(SmallGroupNetwork:::which_matrix_type(1, 4), "adjacency")
-  expect_equal(SmallGroupNetwork:::which_matrix_type(matrix(0, 3, 2)),"edgelist")
-  expect_error(SmallGroupNetwork:::which_matrix_type(matrix(0, 2, 3)))
-  expect_error(SmallGroupNetwork:::which_matrix_type(c(1,2)))
-  expect_warning(expect_equal(SmallGroupNetwork:::which_matrix_type(matrix(0,2,2), 4), "edgelist"))
-  expect_warning(expect_equal(SmallGroupNetwork:::which_matrix_type(matrix(0,2,2)), "adjacency"))
-})
-
-
-
-

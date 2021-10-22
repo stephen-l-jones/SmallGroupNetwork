@@ -1,17 +1,16 @@
 #' Configuration set
 #' 
-#' \code{configuration_set} creates a \code{configuration_set} object, which is
-#' a list of configurations.
+#' \code{configuration_set} creates a a list of \code{configuration} objects.
 #' 
 #' @param ...
 #' \code{configuration} objects, \code{configuration_set} objects, matrices, 
 #' edge lists, or other objects that can be coerced to \code{configuration} objects.
 #' @return
-#' A \code{configuration_set}.
+#' A \code{configuration_set} object.
 #' @details 
 #' A configuration set is fitted to one or more group networks. See 
-#' \code{\link{fit_group_network}} for details.
-#' @seealso \code{\link{fit_group_network}}, \code{\link{configuration}}
+#' \code{\link{fit_configuration_set}} for details.
+#' @seealso \code{\link{fit_configuration_set}}, \code{\link{configuration}}
 #' @export
 configuration_set <- function (...) {
   x <- list(...)

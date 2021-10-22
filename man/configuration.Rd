@@ -17,8 +17,8 @@ configuration(x, ...)
   weights,
   type = c("binary", "weighted"),
   loops = FALSE,
-  description,
-  id,
+  description = "",
+  id = 0,
   ...
 )
 
@@ -27,8 +27,8 @@ configuration(x, ...)
   attrname,
   type = c("binary", "weighted"),
   loops = FALSE,
-  description,
-  id,
+  description = "",
+  id = 0,
   ...
 )
 
@@ -37,8 +37,8 @@ configuration(x, ...)
   attrname,
   type = c("binary", "weighted"),
   loops = FALSE,
-  description,
-  id,
+  description = "",
+  id = 0,
   ...
 )
 
@@ -50,7 +50,7 @@ is.configuration(x)
 \item{x}{A square adjacency matrix, two-column edge list, \code{igraph} object, or
 \code{network} object.}
 
-\item{group_size}{Size of the group.}
+\item{group_size}{Size of the group. Used only when x is an edge list.}
 
 \item{weights}{Numeric vector of edge weights for an edge list. Length should equal the number
 of rows in \code{x}.}
@@ -64,13 +64,9 @@ values are numeric or \code{NA}.}
 \item{id}{A unique identifier for the configuration.}
 
 \item{attrname}{Attribute name that holds the edge weights (usually \code{"weight"}).}
-
-\item{input_type}{Used to identify \code{x}. Can be \code{"unspecified"}, \code{"edgelist"}, or
-\code{"adjacency"}. If unspecified, the function will guess whether \code{x} is
-an edge list or adjacency matrix.}
 }
 \value{
-A \code{configuration}.
+A \code{configuration} object.
 }
 \description{
 \code{configuration} creates a configuration, which is a square adjacency matrix
@@ -78,8 +74,9 @@ with attributes that define its characteristics.
 }
 \details{
 A configuration is represented as a binary or weighted \emph{n}-by-\emph{n}
-adjacency matrix for a group of size \emph{n}. Configurations within a \code{
-configuration_set} are fitted to group networks of the same size and type.
+adjacency matrix for a group of size \emph{n}. A configuration is fitted to
+group networks of the same size using \code{fit_configuration}. Multiple
+configurations are fit to group networks using \code{fit_configuration_set}.
 }
 \section{Methods (by class)}{
 \itemize{
@@ -102,5 +99,6 @@ el <- cbind(c(1,1,1),c(2,3,4))
 configuration(el, group_size = 6)
 }
 \seealso{
-\code{\link{fit_group_network}}, \code{\link{configuration_set}}
+\code{\link{fit_configuration}}, \code{\link{fit_configuration_set}},
+\code{\link{configuration_set}}
 }

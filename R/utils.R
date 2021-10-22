@@ -70,9 +70,8 @@ pb_lapply <- function (
     cat(sprintf("Parallel processing with %s cores...\n", cores))
     cl <- snow::makeCluster(spec = cores, type = "SOCK")
   }
-  pb = txtProgressBar(
+  pb <- txtProgressBar(
     max   = length(x), 
-    width = min(getOption("width"), 100),
     style = 3
   )
   if (is.null(cl)) {
