@@ -1,7 +1,7 @@
 
 library(SmallGroupNetwork)
 
-test_that("fit_group_network", {
+test_that("fit_configuration_set", {
   w = matrix(c(0,-0.4,-0.6,-1.0,-0.2,0,1.2,-1.0,-1.2,-.1,0,0.4,-1.2,-0.8,0.5,0), 4, 4)
   f = set_configuration_ids(list(
     star(2:4),
@@ -9,8 +9,7 @@ test_that("fit_group_network", {
     configuration(add_component(c(star(2), star(2))), description = "2 dyads")#,
     #configuration(subgroup(4), description = "team")
   ))
-  y = fit_group_network(w, f, solver = "naive")
-  attr(w, "group_name") = "G1"
+  y = fit_configuration_set(w, f, ties.method = "first")
   expect_equal(names(y), "G1")
   expect_equal(y[[1]]$x, w)
   expect_equal(y[[1]]$configuration_id, attr(f[[2]], "id"))

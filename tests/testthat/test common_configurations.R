@@ -14,7 +14,7 @@ test_that("star", {
     id = 1
   )
   exp = list(exp)
-  class(exp) = c("configuration_list", "list")
+  class(exp) = c("configuration_set", "list")
   expect_equal(out, exp)
   
   out = star(2:4)
@@ -36,7 +36,7 @@ test_that("star", {
     id = 1
   )
   exp = list(exp)
-  class(exp) = c("configuration_list", "list")
+  class(exp) = c("configuration_set", "list")
   expect_equal(out, exp)
   
   out = star(2, value = 2)
@@ -52,7 +52,7 @@ test_that("star", {
     id = 1
   )
   exp = list(exp)
-  class(exp) = c("configuration_list", "list")
+  class(exp) = c("configuration_set", "list")
   expect_equal(out, exp)
   
   out = star(2, mode = "in")
@@ -68,7 +68,7 @@ test_that("star", {
     id = 1
   )
   exp = list(exp)
-  class(exp) = c("configuration_list", "list")
+  class(exp) = c("configuration_set", "list")
   expect_equal(out, exp)
   
   out = star(2, mode = "out")
@@ -84,7 +84,7 @@ test_that("star", {
     id = 1
   )
   exp = list(exp)
-  class(exp) = c("configuration_list", "list")
+  class(exp) = c("configuration_set", "list")
   expect_equal(out, exp)
   
   out = star(2, group_size = 3)
@@ -100,7 +100,7 @@ test_that("star", {
     id = 1
   )
   exp = list(exp)
-  class(exp) = c("configuration_list", "list")
+  class(exp) = c("configuration_set", "list")
   expect_equal(out, exp)
   
   

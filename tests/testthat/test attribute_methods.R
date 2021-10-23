@@ -3,7 +3,7 @@ library(SmallGroupNetwork)
 test_that("get_attribute", {
   f = star(2:4)
   w = lapply(1:4, function(i) matrix(round(rnorm(16), 1), 4, 4))
-  y = fit_group_network(w, f)
+  y = fit_configuration_set(w, f)
   
   # Configuration list
   expect_equal(get_attribute(f, "class"), matrix(c("configuration","matrix"), 2, 3))

@@ -17,10 +17,10 @@ permute_solve_fit <- function (w, f, ...) {
   })
 
   fit   <- f
-  fit[] <- f[f_order, f_order][best_order, best_order]
+  fit[] <- f[f_order, f_order, drop = FALSE][best_order, best_order, drop = FALSE]
   dimnames(fit) <- lapply(dimnames(f), function(nam) nam[f_order][best_order])
   score <- sum(get_attribute(f_solve, "FUN")(
-    f_solve[f_order, f_order][best_order, best_order], 
+    f_solve[f_order, f_order, drop = FALSE][best_order, best_order, drop = FALSE], 
     w
   ))
   
@@ -43,22 +43,18 @@ configuration_pairing <- function (f) {
   pair_end <- NULL
   unpaired <- seq_len(n)
   f_ndx    <- seq_len(n)
+  if (length(f_ndx) < 2)
+    return(list(unpaired))
   for (p in seq_len(n - 1)) {
     x_seq <- head(unpaired, -1)[tail(unpaired, -1) - head(unpaired, -1) == p]
     for (x in x_seq) {
       y <- x + p
-      a <- rbind(
-        cbind(x, x),
-        cbind(x, y),
-        cbind(x, f_ndx[-c(x,y)]),
-        cbind(f_ndx[-c(x,y)], x)
-      )
-      b <- rbind(
-        cbind(y, y),
-        cbind(y, x),
-        cbind(y, f_ndx[-c(x,y)]),
-        cbind(f_ndx[-c(x,y)], y)
-      )
+      a <- rbind(cbind(x, x), cbind(x, y))
+      b <- rbind(cbind(y, y), cbind(y, x))
+      if (length(f_ndx) > 2) {
+        a <- rbind(a, cbind(x, f_ndx[-c(x,y)]), cbind(f_ndx[-c(x,y)], x))
+        b <- rbind(b, cbind(y, f_ndx[-c(x,y)]), cbind(f_ndx[-c(x,y)], y))
+      }
       if (all(f[a] == f[b] & is.na(f[a]) == is.na(f[b]), na.rm = TRUE)) {
         pair_ndx <- which(pair_end == x)
         if (length(pair_ndx) == 0) {
