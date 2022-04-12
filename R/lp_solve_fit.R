@@ -1,4 +1,3 @@
-#' @import ROI ROI.plugin.glpk Rglpk
 lp_solve_fit <- function (w, f, solver = "gplk", ...) {
   f_solve  <- configuration_solve(f)
   edge     <- set_edge(f_solve)
@@ -7,7 +6,7 @@ lp_solve_fit <- function (w, f, solver = "gplk", ...) {
   constr   <- constraint_aggregator()
   
   # Objective function
-  obj_function <- L_objective(unlist(vars$coef))
+  obj_function <- ROI::L_objective(unlist(vars$coef))
   
   # Add constraints
   config_constraints(constr, vars)
@@ -18,14 +17,14 @@ lp_solve_fit <- function (w, f, solver = "gplk", ...) {
   edge_map_vertex_map_constraints(constr, vars, edge, vertex)
   
   # Create constraint object
-  obj_constraint <- L_constraint(
+  obj_constraint <- ROI::L_constraint(
     L   = constr$get_sparse_lhs(),
     dir = constr$get_dir(),
     rhs = constr$get_rhs()
   )
   
   # Create objective program
-  obj_program <- OP(
+  obj_program <- ROI::OP(
     objective   = obj_function,
     constraints = obj_constraint,
     types       = rep("B", vars$n),
@@ -33,8 +32,8 @@ lp_solve_fit <- function (w, f, solver = "gplk", ...) {
   )
   
   # Solve program
-  lp_duration = system.time({
-    obj_solution = ROI_solve(obj_program, solver = solver, ...)
+  lp_duration <- system.time({
+    obj_solution = ROI::ROI_solve(obj_program, solver = solver, ...)
   })
   
   ## TO DO: when solver fails

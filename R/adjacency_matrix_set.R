@@ -57,7 +57,7 @@ adjacency_matrix_set_from_edgelist <- function (
   if (missing(weights) || is.null(weights)) {
     weights <- rep(1L, nrow(el))
   }
-  x          <- split(el, group_index)
+  x          <- lapply(split(el, group_index), matrix, ncol = 2)
   group_size <- lapply(split(group_size, group_index), head, 1)
   weights    <- split(weights, group_index)
   

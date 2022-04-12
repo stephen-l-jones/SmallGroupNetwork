@@ -67,16 +67,28 @@ adjacency_matrix.igraph <- function (x, attrname, ...) {
   } else {
     m <- igraph::as_adjacency_matrix(x, sparse = FALSE)
   }
+  if (is.null(colnames(m))) {
+    v <- seq_along(diag(m))
+  } else {
+    v <- colnames(m)
+  }
+  dimnames(m) <- list(v, v)
   return(m)
 }
 
 #' @export
 adjacency_matrix.network <- function (x, attrname, ...) {
-  if (!missing(attrname) && attrname %in% igraph::edge_attr_names(x)) {
+  if (!missing(attrname) && attrname %in% network::list.edge.attributes(x)) {
     m <- network::as.sociomatrix(x, attrname = attrname)
   } else {
     m <- network::as.sociomatrix(x)
   }
+  if (is.null(colnames(m))) {
+    v <- seq_along(diag(m))
+  } else {
+    v <- colnames(m)
+  }
+  dimnames(m) <- list(v, v)
   return(m)
 }
 

@@ -58,10 +58,13 @@ fit_configuration.default <- function (
     if (length(group_index) == 1) {
       group_index <- rep(group_index, nrow(x))
     }
+    if (length(group_size) == 1) {
+      group_size <- rep(group_size, nrow(x))
+    }
     w_list <- adjacency_matrix_set_from_edgelist(
       x, 
       group_index = group_index, 
-      group_size  = rep(group_size, nrow(x)),
+      group_size  = group_size,
       weights     = weights
     )
     return(pb_lapply(
