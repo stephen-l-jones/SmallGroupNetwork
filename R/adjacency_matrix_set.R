@@ -49,17 +49,23 @@ adjacency_matrix_set_from_edgelist <- function (
     stop("el must be a 2-column matrix.")
   if (nrow(el) != length(group_index))
     stop("Length of group_index must match the number of rows in el.")
-  if (nrow(el) != length(group_size))
+  if (!missing(group_size) && !is.null(group_size) && nrow(el) != length(group_size))
     stop("Length of group_size must match the number of rows in el.")
   if (!missing(weights) && !is.null(weights) && nrow(el) != length(weights))
     stop("Length of weights must match the number of rows in el.")
   
-  if (missing(weights) || is.null(weights)) {
+  x <- lapply(split(el, group_index), matrix, ncol = 2)
+  
+  if (missing(group_size) || is.null(group_size)) {
+    group_size <- lapply(split(el, group_index), function(x) length(unique(x)))
+  } else {
+    group_size <- lapply(split(group_size, group_index), head, 1)
+  }
+
+ if (missing(weights) || is.null(weights)) {
     weights <- rep(1L, nrow(el))
   }
-  x          <- lapply(split(el, group_index), matrix, ncol = 2)
-  group_size <- lapply(split(group_size, group_index), head, 1)
-  weights    <- split(weights, group_index)
+  weights <- split(weights, group_index)
   
   adjacency_matrix_set.list(
     x,

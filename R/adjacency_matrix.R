@@ -48,14 +48,17 @@ adjacency_matrix.default <- function (
     m <- matrix(0L, group_size, group_size, dimnames = list(v, v))
     m[x] <- weights
   } else {
-    group_size <- length(diag(x))
+    group_size <- max(length(diag(x)), group_size)
     if (is.null(colnames(x))) {
-      v <- seq_along(diag(x))
+      v <- seq_len(group_size)
     } else {
       v <- colnames(x)
+      if (length(v) < group_size) {
+        v <- c(v, seq_len(group_size)[-seq_along(v)])
+      }
     }
-    m <- x
-    dimnames(m) <- list(v, v)
+    m <- matrix(0L, group_size, group_size, dimnames = list(v, v))
+    m[seq_len(nrow(x)), seq_len(ncol(x))] <- x
   }
   return(m)
 }

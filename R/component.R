@@ -33,7 +33,9 @@ add_component <- function (
   component, configuration = NULL, group_size = NULL, ...
 ) {
   if (!is.list(component)) {
-    component <- list(component)
+    if (!is.configuration(component)) {
+      component <- list(configuration(component, ...))
+    }
   }
   component <- as.configuration_set(component)
   if (is.null(configuration)) {
@@ -43,11 +45,9 @@ add_component <- function (
       g <- group_size
     }
     f <- configuration(
-      group_size = g, 
-      type       = get_attribute(component[[1]], "type"),
-      loops      = get_attribute(component[[1]], "loops"),
+      group_size = g,
       ...
-    )
+    )      
   } else {
     f <- as.configuration(configuration)
     g <- get_attribute(configuration, "group_size")

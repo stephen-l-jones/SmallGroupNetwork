@@ -142,7 +142,7 @@ subgroup <- function (
   if (missing(group_size)) {
     group_size <- maxg
   } else {
-    group_size <- as.integer(group_size)
+    group_size <- as.integer(group_size)[[1]]
     if (group_size < maxg) 
       stop(sprintf("given the inputs, group_size must be %s or greater.", maxg))
   }
@@ -208,8 +208,8 @@ subgroup_all <- function (
   type = ifelse(value %in% c(0:1,NA),"binary","weighted")
 ) {
   n          <- as.integer(n)
-  group_size <- as.integer(group_size)
-  min_size   <- as.integer(min_size)
+  group_size <- as.integer(group_size)[[1]]
+  min_size   <- as.integer(min_size)[[1]]
   mode       <- match.arg(mode)
   relation   <- match.arg(relation)
   if (min(n) < 2) 
