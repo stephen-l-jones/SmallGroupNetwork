@@ -16,6 +16,7 @@ configuration(x, ...)
   group_size,
   weights,
   type = c("binary", "weighted"),
+  directed = FALSE,
   loops = FALSE,
   description = "",
   id = 0,
@@ -36,7 +37,6 @@ configuration(x, ...)
   x,
   attrname,
   type = c("binary", "weighted"),
-  loops = FALSE,
   description = "",
   id = 0,
   ...
@@ -58,6 +58,11 @@ of rows in \code{x}.}
 \item{type}{Configuration type of either \code{"binary"} or \code{"weighted"}. Binary
 configuration values are \code{0}, \code{1}, or \code{NA}. Weighted configuration
 values are numeric or \code{NA}.}
+
+\item{directed}{When \code{FALSE}, configuration must be symmetric across the diagonal. When
+\code{TRUE}, asymmetric edges are allowed.}
+
+\item{loops}{When \code{FALSE}, diagonal values are set to \code{NA}.}
 
 \item{description}{Description or label for the configuration.}
 

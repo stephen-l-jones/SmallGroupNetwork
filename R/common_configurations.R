@@ -9,9 +9,11 @@
 #' @param group_size
 #' Size of the group.
 #' @param mode
-#' Can be \code{"mutual"}, \code{"in"}, or \code{"out"}: for edge \emph{(i, j)} and 
-#' matrix \emph{M}, \code{"out"} creates edge \emph{M(i, j)}, \code{"in"} creates 
-#' edge \emph{M(j, i)}, and \code{"mutual"} creates both.
+#' Can be \code{"undirected"}, \code{"mutual"}, \code{"in"}, or \code{"out"}: for 
+#' edge \emph{(i, j)} and matrix \emph{M}, \code{"out"} creates edge \emph{M(i, j)}, 
+#' \code{"in"} creates edge \emph{M(j, i)}, and \code{"mutual"} creates both. When
+#' \code{"undirected"}, the configuration is set to \code{directed = FALSE} and
+#' mutual edges are created.
 #' @param loops
 #' When \code{FALSE}, diagonal values are set to \code{NA}.
 #' @param value
@@ -23,8 +25,8 @@
 #' star(2:4, 6)
 #' @export
 star <- function (
-  n, group_size = max(n), mode = c("mutual","in","out"), loops = FALSE, value = 1L, 
-  type = ifelse(value %in% c(0:1,NA),"binary","weighted")
+  n, group_size = max(n), mode = c("undirected","mutual","in","out"), directed = TRUE, 
+  loops = FALSE, value = 1L, type = ifelse(value %in% c(0:1,NA),"binary","weighted")
 ) {
   n          <- as.integer(n)
   group_size <- as.integer(group_size)
@@ -35,15 +37,19 @@ star <- function (
     stop("group_size cannot be less than n.")
   if (type == "binary" & value != 1)
     stop("value must be 1 for binary configuration types.")
+  if (!directed & mode %in% c("in","out")) {
+    warning("When mode set to 'in' or 'out', directed must be TRUE. Setting directed = TRUE.")
+  }
   
   mlist <- lapply(n, function(x) {
     m <- matrix(0L, group_size, group_size)
     e <- cbind(1, 2:x)
     m[switch(
       mode,
-      mutual = rbind(e, e[, 2:1]),
-      `in`   = e[, 2:1],
-      out    = e
+      undirected = rbind(e, e[, 2:1]),
+      mutual     = rbind(e, e[, 2:1]),
+      `in`       = e[, 2:1],
+      out        = e
     )] <- value
     if (!loops) {
       diag(m) <- NA
@@ -52,6 +58,7 @@ star <- function (
       m           = m, 
       description = paste(x, "star"), 
       type        = type,
+      directed    = (mode != "undirected"),
       loops       = loops,
       id          = 0
     )
@@ -68,7 +75,7 @@ star <- function (
 #' ring(2:4, 6)
 #' @export
 ring <- function (
-  n, group_size = max(n), mode = c("mutual","in","out"), loops = FALSE, value = 1L,
+  n, group_size = max(n), mode = c("undirected","mutual","in","out"), loops = FALSE, value = 1L,
   type = ifelse(value %in% c(0:1,NA),"binary","weighted")
 ) {
   n          <- as.integer(n)
@@ -86,9 +93,10 @@ ring <- function (
     e <- cbind(1:x, c(2:x, 1))
     m[switch(
       mode,
-      mutual = rbind(e, e[, 2:1]),
-      `in`   = e[, 2:1],
-      out    = e
+      undirected = rbind(e, e[, 2:1]),
+      mutual     = rbind(e, e[, 2:1]),
+      `in`       = e[, 2:1],
+      out        = e
     )] <- value
     if (!loops) {
       diag(m) <- NA
@@ -97,6 +105,7 @@ ring <- function (
       m           = m, 
       description = paste(x, "ring"), 
       type        = type,
+      directed    = (mode != "undirected"),
       loops       = loops,
       id          = 0
     )
@@ -122,7 +131,7 @@ ring <- function (
 #' subgroup(2, 4, group_size = 8, relation = "between")
 #' @export
 subgroup <- function (
-  ..., group_size = NULL, mode = c("mutual","in","out"), 
+  ..., group_size = NULL, mode = c("undirected","mutual","in","out"), 
   relation = c("within","between"), loops = FALSE, value = 1L,
   type = ifelse(value %in% c(0:1,NA),"binary","weighted")
 ) {
@@ -173,9 +182,10 @@ subgroup <- function (
     }
     m[switch(
       mode,
-      mutual = e,
-      `in`   = e[e[, 1] > e[, 2], , drop = FALSE],
-      out    = e[e[, 1] < e[, 2], , drop = FALSE]
+      undirected = e,
+      mutual     = e,
+      `in`       = e[e[, 1] > e[, 2], , drop = FALSE],
+      out        = e[e[, 1] < e[, 2], , drop = FALSE]
     )] <- value
     if (!loops) {
       diag(m) <- NA
@@ -184,6 +194,7 @@ subgroup <- function (
       m           = m, 
       description = paste(paste(sg, collapse = " "), relation),
       type        = type,
+      directed    = (mode != "undirected"),
       loops       = loops,
       id          = 0
     )

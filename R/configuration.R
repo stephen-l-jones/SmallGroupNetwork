@@ -1,5 +1,5 @@
 make_configuration <- function (
-  m, type = c("binary","weighted"), loops = FALSE, description = "", id = 0
+  m, type = c("binary","weighted"), directed = FALSE, loops = FALSE, description = "", id = 0
 ) {
   type <- match.arg(type)
   if (!("matrix" %in% class(m)) || nrow(m) != ncol(m))
@@ -7,6 +7,12 @@ make_configuration <- function (
   if (type == "binary") {
     if (!all(m %in% c(0:1, NA)))
       stop("Configurations of type 'binary' may only have 0, 1, or NA values.")
+  }
+  if (!directed) {
+    if (any(!is.na(t(m)[is.na(m)])) || any(m[!is.na(m)] != t(m)[!is.na(m)])) {
+      warning("Undirected configurations must be symmetric. Setting directed = TRUE.")
+      directed <- TRUE
+    }
   }
   if (is.null(colnames(m))) {
     if (is.null(rownames(m))) {
@@ -32,6 +38,7 @@ make_configuration <- function (
     class       = c("configuration", "matrix"),
     group_size  = nrow(m),
     type        = type,
+    directed    = directed,
     loops       = loops,
     description = description[[1]],
     id          = id[[1]]
@@ -74,6 +81,11 @@ configuration <- function (x, ...) {
 #' Configuration type of either \code{"binary"} or \code{"weighted"}. Binary 
 #' configuration values are \code{0}, \code{1}, or \code{NA}. Weighted configuration 
 #' values are numeric or \code{NA}.
+#' @param directed
+#' When \code{FALSE}, configuration must be symmetric across the diagonal. When
+#' \code{TRUE}, asymmetric edges are allowed. 
+#' @param loops
+#' When \code{FALSE}, diagonal values are set to \code{NA}.
 #' @param description
 #' Description or label for the configuration.
 #' @param id
@@ -88,13 +100,13 @@ configuration <- function (x, ...) {
 #' @export
 configuration.default <- function (
   x, group_size, weights, 
-  type = c("binary","weighted"), loops = FALSE, description = "", id = 0, ...
+  type = c("binary","weighted"), directed = FALSE, loops = FALSE, description = "", id = 0, ...
 ) {
   if (missing(x)) {
     x <- NULL
   }
   m <- adjacency_matrix(x, group_size, weights, ...)
-  make_configuration(m, type, loops, description, id)
+  make_configuration(m, type, directed, loops, description, id)
 }
 
 #' @describeIn configuration Create a \code{configuration} from an \code{igraph} 
@@ -107,25 +119,29 @@ configuration.igraph <- function (
   description = "", id = 0, ...
 ) {
   m <- adjacency_matrix(x, attrname, ...)
-  make_configuration(m, type, loops, description, id)
+  make_configuration(m, type, directed = igraph::is.directed(x), loops, description, id)
 }
 
 #' @describeIn configuration Create a \code{configuration} from a \code{network} 
 #' object.
 #' @export
 configuration.network <- function (
-  x, attrname, type = c("binary","weighted"), loops = FALSE, 
-  description = "", id = 0, ...
+  x, attrname, type = c("binary","weighted"), description = "", id = 0, ...
 ) {
   m <- adjacency_matrix(x, attrname, ...)
-  make_configuration(m, type, loops, description, id)
+  make_configuration(
+    m, type, directed = network::is.directed(x), loops = network::has.loops(x), description, id
+  )
 }
 
 #' @export
-configuration.configuration <- function (x, type, loops, description, id, ...) {
+configuration.configuration <- function (x, type, directed, loops, description, id, ...) {
   if (missing(type)) {
     type <- get_attribute(x, "type")
-  }        
+  }  
+  if (missing(directed)) {
+    directed <- get_attribute(x, "directed")
+  }  
   if (missing(loops)) {
     loops <- get_attribute(x, "loops")
   }      
@@ -135,7 +151,7 @@ configuration.configuration <- function (x, type, loops, description, id, ...) {
   if (missing(id)) {
     id <- get_attribute(x, "id")
   }        
-  make_configuration(x, type, loops, description, id)
+  make_configuration(x, type, directed, loops, description, id)
 }
 
 #' @export

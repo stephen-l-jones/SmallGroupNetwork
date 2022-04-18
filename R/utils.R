@@ -44,6 +44,15 @@ mbindlist <- function (x) {
   )
 }
 
+node_circle_xy = function(n, radius = 1) {
+  n = as.integer(n)
+  if (n < 1) stop("Number of nodes must be at least 1.")
+  
+  gap   = 360 / n
+  theta = (90 - seq(0, 360 - gap, length.out = n)) * pi / 180
+  round(cbind(x = cos(theta), y = sin(theta)) * radius, 5)
+}
+
 strip_attr <- function (x, keep = c("dim","dimnames","names")) {
   attrs <- names(attributes(x))
   for (a in attrs[!(attrs %in% keep)]) {

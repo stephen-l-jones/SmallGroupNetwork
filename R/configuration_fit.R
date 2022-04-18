@@ -1,9 +1,9 @@
 #' Configuration fit and fit set objects
 #' 
-#' A \code{configuration_fit} object is returned by the \code{\link{
-#' fit_configuration}} function for a given group network. A \code{
-#' configuration_fit_set} object is returned by the \code{\link{
-#' fit_configuration_set}} function when \code{ties.method = "all"}.
+#' A \code{configuration_fit} object is returned by the \code{
+#' \link{fit_configuration}} function for a given group network. A \code{
+#' configuration_fit_set} object is returned by the \code{
+#' \link{fit_configuration_set}} function when \code{ties.method = "all"}.
 #' @return 
 #' A \code{configuration_fit} object has the following elements:
 #' \itemize{
@@ -20,7 +20,7 @@
 #' \itemize{
 #'   \item{\code{duration}: Duration of solver function.} 
 #'   \item{\code{solver}: Name of solver used.}
-#'   \item{\code{ROI_obj}: Returned object from the \code{\link{ROI_solve}} 
+#'   \item{\code{ROI_obj}: Returned object from the \code{ROI_solve} 
 #'   function, if used.}
 #'   \item{\code{lp_structure}: Structure of the linear program submitted to 
 #'   \code{ROI_solve} function, if used.}

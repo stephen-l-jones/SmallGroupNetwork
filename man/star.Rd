@@ -10,7 +10,8 @@
 star(
   n,
   group_size = max(n),
-  mode = c("mutual", "in", "out"),
+  mode = c("undirected", "mutual", "in", "out"),
+  directed = TRUE,
   loops = FALSE,
   value = 1L,
   type = ifelse(value \%in\% c(0:1, NA), "binary", "weighted")
@@ -19,7 +20,7 @@ star(
 ring(
   n,
   group_size = max(n),
-  mode = c("mutual", "in", "out"),
+  mode = c("undirected", "mutual", "in", "out"),
   loops = FALSE,
   value = 1L,
   type = ifelse(value \%in\% c(0:1, NA), "binary", "weighted")
@@ -28,7 +29,7 @@ ring(
 subgroup(
   ...,
   group_size = NULL,
-  mode = c("mutual", "in", "out"),
+  mode = c("undirected", "mutual", "in", "out"),
   relation = c("within", "between"),
   loops = FALSE,
   value = 1L,
@@ -51,9 +52,11 @@ subgroup_all(
 
 \item{group_size}{Size of the group.}
 
-\item{mode}{Can be \code{"mutual"}, \code{"in"}, or \code{"out"}: for edge \emph{(i, j)} and
-matrix \emph{M}, \code{"out"} creates edge \emph{M(i, j)}, \code{"in"} creates
-edge \emph{M(j, i)}, and \code{"mutual"} creates both.}
+\item{mode}{Can be \code{"undirected"}, \code{"mutual"}, \code{"in"}, or \code{"out"}: for
+edge \emph{(i, j)} and matrix \emph{M}, \code{"out"} creates edge \emph{M(i, j)},
+\code{"in"} creates edge \emph{M(j, i)}, and \code{"mutual"} creates both. When
+\code{"undirected"}, the configuration is set to \code{directed = FALSE} and
+mutual edges are created.}
 
 \item{loops}{When \code{FALSE}, diagonal values are set to \code{NA}.}
 
