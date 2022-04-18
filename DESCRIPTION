@@ -1,16 +1,16 @@
 Package: SmallGroupNetwork
-Title: Fit Group Networks to Network Configurations
+Title: Fit Network Configurations ot Small Group Networks 
 Version: 0.2.0.0000
 Authors@R: 
     person(given = "Stephen L.",
            family = "Jones",
            role = c("aut", "cre"),
-           email = "stephen.l.jones@gmail.com",
+           email = "sjones1@uw.edu",
            comment = c(ORCID = "0000-0003-1089-4821"))
-Description: Matches small group networks to the best fitting network configurations. Group networks 
-  and configuration networks can be binary or weighted, directed or undirected, reflexive (with 
-  loops) or not. Fitting is done using linear program optimization. Performance degrades quickly for 
-  large groups.
+Description: Fits candidate configurations to small group networks. Group networks and 
+  configuration networks can be binary or weighted, directed or undirected, include loops 
+  or not. Fitting is done using a naive algorithm or linear program optimization. Performance 
+  degrades quickly for large groups.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
