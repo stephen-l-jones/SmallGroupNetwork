@@ -211,7 +211,7 @@ summary.configuration <- function (x, ...) {
     size     = attr(x, "group_size"),
     type     = attr(x, "type"),
     loops    = ifelse(attr(x, "loops"), "allowed", "excluded"),
-    values   = table(x[edge_ndx], useNA = "ifany")
+    values   = table(x[t(edge_ndx)], useNA = "ifany")
   )
   class(s) <- "configuration_summary"
   return(s)
