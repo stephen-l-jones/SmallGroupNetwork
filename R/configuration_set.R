@@ -32,7 +32,9 @@ as.configuration_set.list <- function (x) {
       f_list <- c(f_list, f)
     } else {
       f      <- as.configuration(x[[i]])
-      f_list <- c(f_list, list(f))
+      elem_f <- list(f)
+      names(elem_f) <- names(x)[i]
+      f_list <- c(f_list, elem_f)
     }
   }
   class(f_list) = c("configuration_set", "list")
