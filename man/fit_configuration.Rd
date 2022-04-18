@@ -134,7 +134,7 @@ Fitting is done using a naive algorithm or using a linear program (LP) through
 the \code{ROI} package. The naive algorithm is written in C++ to improve
 performance and often is faster than LP solvers. To use an LP solver, pass the
 solver name and any solver parameters through \code{...} to the \code{
-\link{ROI_solve}} function (e.g., \code{solver = "glpk"}). When parallel
+ROI_solve} function (e.g., \code{solver = "glpk"}). When parallel
 processing, also pass the solver package name and the associated \code{
 ROI.plugin.*} package name through \code{...} using a \code{"packages"}
 parameter (e.g., \code{packages = c("Rglpk","ROI.plugin.glpk")}).
