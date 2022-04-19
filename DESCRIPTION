@@ -19,6 +19,8 @@ RoxygenNote: 7.1.2
 Imports:
   doSNOW,
   foreach,
+  ggforce,
+  ggplot2,
   mathjaxr,
   parallel,
   Rcpp,

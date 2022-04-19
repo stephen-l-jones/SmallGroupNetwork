@@ -10,6 +10,19 @@ prodNA <- function (x, y) {
   z
 }
 
+bezier_midpoint <- function (x1, y1, x2, y2, radius = 1) {
+  h  <- pmin(sqrt((x1 - x2)^2 + (y1 - y2)^2) / radius, sqrt(2)) 
+  g  <- sqrt(2) * sin(pi/4 - asin(h/2))
+  x3 <- (x1 + x2) / 2
+  y3 <- (y1 + y2) / 2
+  theta <- atan2(y3, x3)
+  x_mid <- g * cos(theta) * radius
+  y_mid <- g * sin(theta) * radius
+  
+  cbind(x = ifelse(h < sqrt(2), x_mid, 0),
+        y = ifelse(h < sqrt(2), y_mid, 0))
+}
+
 #' @export
 expand_int_matrix <- function (...) {
   args    <- list(...)
@@ -44,12 +57,13 @@ mbindlist <- function (x) {
   )
 }
 
-node_circle_xy = function(n, radius = 1) {
-  n = as.integer(n)
-  if (n < 1) stop("Number of nodes must be at least 1.")
+node_circle_xy <- function(n, radius = 1) {
+  n <- as.integer(n)
+  if (n < 1) 
+    stop("Number of nodes must be at least 1.")
   
-  gap   = 360 / n
-  theta = (90 - seq(0, 360 - gap, length.out = n)) * pi / 180
+  gap   <- 360 / n
+  theta <- (90 - seq(0, 360 - gap, length.out = n)) * pi / 180
   round(cbind(x = cos(theta), y = sin(theta)) * radius, 5)
 }
 
