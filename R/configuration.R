@@ -226,6 +226,7 @@ summary.configuration <- function (x, ...) {
     id       = attr(x, "id"),
     size     = attr(x, "group_size"),
     type     = attr(x, "type"),
+    directed = attr(x, "directed"),
     loops    = ifelse(attr(x, "loops"), "allowed", "excluded"),
     values   = table(x[t(edge_ndx)], useNA = "ifany")
   )
@@ -236,14 +237,15 @@ summary.configuration <- function (x, ...) {
 #' @export
 print.configuration_summary <- function (x, ...) {
   cat(
-    "Configuration: ", 
+    "Description : ", 
     ifelse(x$descr == "", "<no description>", x$descr), 
     "\n", sep = ""
   )
-  cat("ID           : ", x$id, "\n", sep = "")
-  cat("Group size   : ", x$size, "\n", sep = "")
-  cat("Type         : ", x$type, "\n", sep = "")
-  cat("Loops        : ", x$loops, "\n", sep = "")
+  cat("ID          : ", x$id, "\n", sep = "")
+  cat("Group size  : ", x$size, "\n", sep = "")
+  cat("Directed    : ", x$directed, "\n", sep = "")
+  cat("Type        : ", x$type, "\n", sep = "")
+  cat("Loops       : ", x$loops, "\n", sep = "")
   cat("Values table:", sep = "")
   print(x$values, ...)
 }
