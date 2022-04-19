@@ -1,6 +1,6 @@
 Package: SmallGroupNetwork
-Title: Fit Network Configurations ot Small Group Networks 
-Version: 0.2.0.0000
+Title: Fit Network Configurations to Small Group Networks 
+Version: 0.4.1.1
 Authors@R: 
     person(given = "Stephen L.",
            family = "Jones",
